@@ -1,0 +1,45 @@
+{
+    "theme": "Space",
+    "generated_at": "2026-08-25T10:15:13.625Z",
+    "source": "dictionaryapi.dev (primary) + datamuse md=d (fallback), auto-suggested chunks, human-reviewed",
+    "puzzle": [
+      {
+        "word": "An empty space",
+        "answer": "void",
+        "chunks": [
+          "void"
+        ]
+      },
+      {
+        "word": "The universe",
+        "answer": "cosmos",
+        "chunks": [
+          "co",
+          "smos"
+        ]
+      },
+      {
+        "word": "The curved path of one object around",
+        "answer": "orbit",
+        "chunks": [
+          "o",
+          "rbit"
+        ]
+      },
+      {
+        "word": "A long vehicle or craft propelled by",
+        "answer": "rocket",
+        "chunks": [
+          "ro",
+          "cket"
+        ]
+      },
+      {
+        "word": "(astronomy) The fourth planet in the solar",
+        "answer": "mars",
+        "chunks": [
+          "mars"
+        ]
+      }
+    ]
+  }

@@ -1,0 +1,52 @@
+{
+    "theme": "Architecture",
+    "generated_at": "2026-08-23T20:05:32.133Z",
+    "source": "datamuse + dictionaryapi.dev (auto-suggested chunks, human-reviewed)",
+    "puzzle": [
+      {
+        "word": "A support structure comprising joined parts or",
+        "answer": "framework",
+        "chunks": [
+          "fra",
+          "me",
+          "work"
+        ]
+      },
+      {
+        "word": "A professional who designs buildings or other",
+        "answer": "architect",
+        "chunks": [
+          "a",
+          "rchi",
+          "tect"
+        ]
+      },
+      {
+        "word": "The machines constituting a production apparatus",
+        "answer": "machinery",
+        "chunks": [
+          "machi",
+          "ne",
+          "ry"
+        ]
+      },
+      {
+        "word": "Any piece of equipment made for a",
+        "answer": "device",
+        "chunks": [
+          "de",
+          "vi",
+          "ce"
+        ]
+      },
+      {
+        "word": "To design",
+        "answer": "engineering",
+        "chunks": [
+          "engi",
+          "nee",
+          "ring"
+        ]
+      }
+    ]
+  }

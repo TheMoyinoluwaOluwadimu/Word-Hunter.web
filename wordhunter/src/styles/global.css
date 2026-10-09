@@ -1,0 +1,33 @@
+:root {
+  --ink: #14151a;
+  --ink-2: #1d1f26;
+  --paper: #edeae2;
+  --paper-dim: #a9a79e;
+  --amber: #e8a33d;
+  --amber-dim: #8a662a;
+  --redact: #c1443c;
+  --teal: #4c7c72;
+  --tile-border: #2b2d36;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+}

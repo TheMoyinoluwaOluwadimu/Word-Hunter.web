@@ -1,0 +1,51 @@
+{
+  "theme": "Music",
+  "generated_at": "2026-08-27T16:44:57.889Z",
+  "source": "dictionaryapi.dev (primary) + datamuse md=d (fallback), auto-suggested chunks, human-reviewed",
+  "puzzle": [
+    {
+      "word": "A sequence of notes that makes up a musical phrase",
+      "answer": "melody",
+      "chunks": [
+        "me",
+        "lo",
+        "dy"
+      ]
+    },
+    {
+      "word": "An extended piece of music of sophisticated ",
+      "answer": "symphony",
+      "chunks": [
+        "sy",
+        "mpho",
+        "ny"
+      ]
+    },
+    {
+      "word": "A large group of musicians who play together",
+      "answer": "orchestra",
+      "chunks": [
+        "o",
+        "rche",
+        "stra"
+      ]
+    },
+    {
+      "word": "A person who writes music.",
+      "answer": "composer",
+      "chunks": [
+        "co",
+        "mpo",
+        "ser"
+      ]
+    },
+    {
+      "word": "A musical performance",
+      "answer": "concert",
+      "chunks": [
+        "co",
+        "ncert"
+      ]
+    }
+  ]
+}
