@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../auth/AuthProvider';
+import AccountDialog from '../components/AccountDialog';
 import {
   ArchiveIcon,
   ChallengeIcon,
@@ -22,6 +25,8 @@ export default function MainMenu() {
   const { stats } = usePlayerStats();
   const now = useNow(30_000);
   const solvedToday = hasSolvedToday(stats, now);
+  const { enabled, user, displayName } = useAuth();
+  const [accountOpen, setAccountOpen] = useState(false);
 
   const themeText =
     puzzleState.status === 'ready' ? (puzzleState.puzzle.theme ?? 'Daily Puzzle') : puzzleState.status === 'error' ? 'Daily Puzzle' : 'Loading';
@@ -36,8 +41,22 @@ export default function MainMenu() {
           </button>
         </div>
         <div className={styles.profileRow}>
-          <div className={styles.avatar}>G</div>
-          <span className={styles.profileName}>Guest</span>
+          {enabled ? (
+            <button
+              type="button"
+              className={styles.profileBtn}
+              onClick={() => setAccountOpen(true)}
+              aria-label={user ? 'Account' : 'Sign in'}
+            >
+              <span className={styles.avatar}>{displayName.charAt(0).toUpperCase()}</span>
+              <span className={styles.profileName}>{user ? displayName : 'Guest · Sign in'}</span>
+            </button>
+          ) : (
+            <>
+              <div className={styles.avatar}>G</div>
+              <span className={styles.profileName}>Guest</span>
+            </>
+          )}
           <span className={styles.streakChip}>
             <StreakIcon />
             <span data-testid="header-streak">{stats.streak}</span>
@@ -115,6 +134,8 @@ export default function MainMenu() {
           <span className={styles.rankNumber}>#—</span>
         </div>
       </div>
+
+      <AccountDialog open={accountOpen} onClose={() => setAccountOpen(false)} />
 
       <footer className={styles.footer}>
         <div className={styles.stat}>

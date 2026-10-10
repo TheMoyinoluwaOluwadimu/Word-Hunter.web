@@ -1,4 +1,4 @@
-import { STORAGE_KEY } from '../config';
+import { PRACTICE_STORAGE_KEY, STORAGE_KEY } from '../config';
 import type { PlayerStats } from '../types';
 
 // Streaks live in the browser until there is a backend. The daily reset is a
@@ -44,6 +44,38 @@ export function saveStats(stats: PlayerStats): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
   } catch {
     // storage unavailable (private mode, quota): the session still works
+  }
+}
+
+/** Fired after local data is replaced from outside a hook (sign-in merge, sign-out), so hooks reload. */
+export const LOCAL_DATA_EVENT = 'wordhunter:local-data';
+
+export function notifyLocalDataChanged(): void {
+  window.dispatchEvent(new Event(LOCAL_DATA_EVENT));
+}
+
+/**
+ * Combines this device's stats with an account's. The side with the later solve date
+ * holds the live streak; the lifetime counters only ever grow.
+ */
+export function mergeStats(a: PlayerStats, b: PlayerStats): PlayerStats {
+  const da = a.lastSolvedDate ?? '';
+  const db = b.lastSolvedDate ?? '';
+  const streak = da === db ? Math.max(a.streak, b.streak) : da > db ? a.streak : b.streak;
+  return {
+    streak,
+    longestStreak: Math.max(a.longestStreak, b.longestStreak, streak),
+    totalSolved: Math.max(a.totalSolved, b.totalSolved),
+    lastSolvedDate: da >= db ? a.lastSolvedDate : b.lastSolvedDate,
+  };
+}
+
+export function clearLocalData(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(PRACTICE_STORAGE_KEY);
+  } catch {
+    // storage unavailable: nothing to clear
   }
 }
 

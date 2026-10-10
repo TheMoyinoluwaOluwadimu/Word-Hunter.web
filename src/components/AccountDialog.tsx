@@ -1,0 +1,154 @@
+import { useEffect, useState } from 'react';
+import type { FormEvent } from 'react';
+import { useAuth } from '../auth/AuthProvider';
+import styles from './AccountDialog.module.css';
+
+interface AccountDialogProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+/** Guests see sign-in options; signed-in players see their account with sign-out and delete. */
+export default function AccountDialog({ open, onClose }: AccountDialogProps) {
+  const { user, displayName, signInWithGoogle, signInWithEmail, signOut, deleteAccount } = useAuth();
+  const [email, setEmail] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
+  // Start clean each time the dialog is reopened.
+  useEffect(() => {
+    if (open) {
+      setError(null);
+      setSent(false);
+      setConfirmDelete(false);
+    }
+  }, [open]);
+
+  if (!open) return null;
+
+  async function run(action: () => Promise<string | null | void>) {
+    setBusy(true);
+    setError(null);
+    const message = await action();
+    setBusy(false);
+    if (message) setError(message);
+    return !message;
+  }
+
+  async function onEmailSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!email.trim()) return;
+    if (await run(() => signInWithEmail(email.trim()))) setSent(true);
+  }
+
+  return (
+    <div className={styles.backdrop} onClick={onClose}>
+      <div
+        className={styles.dialog}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="account-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 id="account-title" className={styles.title}>
+          {user ? 'Account' : 'Sign in'}
+        </h2>
+
+        <div className={styles.panel}>
+          {user ? (
+            <>
+              <p className={styles.name}>{displayName}</p>
+              {user.email && <p className={styles.dim}>{user.email}</p>}
+              <p className={styles.dim}>Your streak and best times are saved to your account.</p>
+              {confirmDelete && (
+                <p className={styles.warn}>This permanently deletes your account and all saved progress.</p>
+              )}
+            </>
+          ) : sent ? (
+            <p className={styles.text}>
+              Check <strong>{email}</strong> for a sign-in link. You can close this window.
+            </p>
+          ) : (
+            <>
+              <p className={styles.text}>Save your streak and play on any device. Your progress so far is kept.</p>
+              <button type="button" className={styles.google} disabled={busy} onClick={() => run(signInWithGoogle)}>
+                Continue with Google
+              </button>
+              <form onSubmit={onEmailSubmit} className={styles.form}>
+                <input
+                  type="email"
+                  required
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={styles.input}
+                  aria-label="Email address"
+                />
+                <button type="submit" className={styles.emailBtn} disabled={busy}>
+                  Email me a link
+                </button>
+              </form>
+            </>
+          )}
+          {error && (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          )}
+        </div>
+
+        <div className={styles.actions}>
+          {user && !confirmDelete && (
+            <>
+              <button
+                type="button"
+                className={styles.secondary}
+                disabled={busy}
+                onClick={async () => {
+                  if (await run(signOut)) onClose();
+                }}
+              >
+                Sign out
+              </button>
+              <button type="button" className={styles.danger} onClick={() => setConfirmDelete(true)}>
+                Delete account
+              </button>
+            </>
+          )}
+          {user && confirmDelete && (
+            <>
+              <button type="button" className={styles.secondary} onClick={() => setConfirmDelete(false)} autoFocus>
+                Keep it
+              </button>
+              <button
+                type="button"
+                className={styles.danger}
+                disabled={busy}
+                onClick={async () => {
+                  if (await run(deleteAccount)) onClose();
+                }}
+              >
+                Delete forever
+              </button>
+            </>
+          )}
+          <button type="button" className={styles.secondary} onClick={onClose}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

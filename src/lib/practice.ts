@@ -27,7 +27,17 @@ export function loadPractice(): PracticeProgress {
   }
 }
 
-function savePractice(progress: PracticeProgress): void {
+/** Combines two progress maps: fastest time wins per puzzle, solve counts only grow. */
+export function mergePractice(a: PracticeProgress, b: PracticeProgress): PracticeProgress {
+  const out: PracticeProgress = { ...a };
+  for (const [file, e] of Object.entries(b)) {
+    const mine = out[file];
+    out[file] = mine ? { best: Math.min(mine.best, e.best), solves: Math.max(mine.solves, e.solves) } : e;
+  }
+  return out;
+}
+
+export function savePractice(progress: PracticeProgress): void {
   try {
     localStorage.setItem(PRACTICE_STORAGE_KEY, JSON.stringify(progress));
   } catch {
