@@ -104,7 +104,7 @@ export default function Game({ mode = 'daily', file = DAILY_PUZZLE_FILE }: GameP
         </Link>
         <div className={styles.headings}>
           <p className={styles.eyebrow}>{practice ? 'Practice' : 'Puzzle of the Day'}</p>
-          <h1 className={styles.title}>Wordhunter</h1>
+          <h1 className={styles.title}>WordChunk</h1>
         </div>
         <div className={styles.stamp}>{practice ? 'PRACTICE' : 'LIVE DEMO'}</div>
       </header>

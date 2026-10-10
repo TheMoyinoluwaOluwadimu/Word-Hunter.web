@@ -1,4 +1,4 @@
-# Wordhunter
+# WordChunk
 
 A themed word-puzzle game. Each row gives you a clue; the answers are broken into chunks that are mixed together in one shared pool. Drag chunks into the slots. Nothing tells you right or wrong until every slot is full, then the board checks itself.
 
@@ -80,11 +80,11 @@ public/puzzles/        puzzle JSON files
 - One global reset at 00:00 UTC, not the player's local midnight.
 - Solve on consecutive days: streak +1. Miss a day: back to 1. No grace period.
 - Replaying an already-solved day does not count again.
-- Stored in `localStorage` (key `wordhunter_state`), per browser, until there is a backend.
+- Stored in `localStorage` (key `wordchunk_state`), per browser, until there is a backend.
 
 ## Practice (archive)
 
 - The Practice card on the menu opens `#/practice`, a list of past puzzles. Tapping one plays it at `#/practice/<file>`.
 - The list comes from `ARCHIVE_PUZZLE_FILES` in `src/config.ts`. When you change `DAILY_PUZZLE_FILE`, add the old file to that list.
-- Practice never changes the streak or the solved count. Each solve only saves the best time per puzzle, in `localStorage` under `wordhunter_practice`.
+- Practice never changes the streak or the solved count. Each solve only saves the best time per puzzle, in `localStorage` under `wordchunk_practice`.
 - After a practice solve the player can replay, jump to the next puzzle in the list, or go back to the archive.

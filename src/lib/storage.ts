@@ -1,4 +1,4 @@
-import { PRACTICE_STORAGE_KEY, STORAGE_KEY } from '../config';
+import { LEGACY_KEYS, PRACTICE_STORAGE_KEY, STORAGE_KEY } from '../config';
 import type { PlayerStats } from '../types';
 
 // Streaks live in the browser until there is a backend. The daily reset is a
@@ -48,7 +48,7 @@ export function saveStats(stats: PlayerStats): void {
 }
 
 /** Fired after local data is replaced from outside a hook (sign-in merge, sign-out), so hooks reload. */
-export const LOCAL_DATA_EVENT = 'wordhunter:local-data';
+export const LOCAL_DATA_EVENT = 'wordchunk:local-data';
 
 export function notifyLocalDataChanged(): void {
   window.dispatchEvent(new Event(LOCAL_DATA_EVENT));
@@ -68,6 +68,20 @@ export function mergeStats(a: PlayerStats, b: PlayerStats): PlayerStats {
     totalSolved: Math.max(a.totalSolved, b.totalSolved),
     lastSolvedDate: da >= db ? a.lastSolvedDate : b.lastSolvedDate,
   };
+}
+
+/** One-time move of progress saved under the old Wordhunter keys, so the rename costs nobody their streak. */
+export function migrateLegacyKeys(): void {
+  try {
+    for (const [oldKey, newKey] of Object.entries(LEGACY_KEYS)) {
+      const value = localStorage.getItem(oldKey);
+      if (value === null) continue;
+      if (localStorage.getItem(newKey) === null) localStorage.setItem(newKey, value);
+      localStorage.removeItem(oldKey);
+    }
+  } catch {
+    // storage unavailable: nothing to migrate
+  }
 }
 
 export function clearLocalData(): void {

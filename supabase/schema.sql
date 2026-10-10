@@ -1,4 +1,4 @@
--- Wordhunter database schema. Paste into Supabase: SQL Editor -> New query -> Run.
+-- WordChunk database schema. Paste into Supabase: SQL Editor -> New query -> Run.
 -- Safe to re-run.
 
 -- Profiles ------------------------------------------------------------------

@@ -35,7 +35,7 @@ export default function MainMenu() {
     <div className={styles.stage}>
       <header className={styles.header}>
         <div className={styles.sign}>
-          <h1 className={styles.title}>Wordhunter</h1>
+          <h1 className={styles.title}>WordChunk</h1>
           <button type="button" className={styles.settingsBtn} title="Settings" aria-label="Settings">
             <SettingsIcon />
           </button>
@@ -89,7 +89,7 @@ export default function MainMenu() {
           ) : (
             <div className={styles.badge}>
               <TrophyIcon />
-              Wordhunter yesterday
+              WordChunk yesterday
             </div>
           )}
           <div className={styles.todayMeta}>
