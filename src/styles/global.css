@@ -1,13 +1,24 @@
+/* Toy Blocks theme: a green felt play mat, a wooden sign, painted blocks. */
 :root {
-  --ink: #14151a;
-  --ink-2: #1d1f26;
-  --paper: #edeae2;
-  --paper-dim: #a9a79e;
-  --amber: #e8a33d;
-  --amber-dim: #8a662a;
-  --redact: #c1443c;
-  --teal: #4c7c72;
-  --tile-border: #2b2d36;
+  --felt: #1f6b57;
+  --wood: #dba76a;
+  --wood-d: #a8743a;
+  --brown: #4a2a12;
+  --cream: #fff4dc;
+  --cream-dim: #e8d8b8;
+  --red: #e34a33;
+  --red-d: #a3321f;
+  --blue: #2e6fd8;
+  --blue-d: #1b4a9a;
+  --yellow: #f5b91e;
+  --yellow-d: #b88410;
+  --orange: #f08a24;
+  --green: #2f9d6a;
+  --green-d: #1b6b45;
+  --paper-edge: #c9a97a;
+  --font-display: 'Lilita One', 'Arial Rounded MT Bold', 'Trebuchet MS', sans-serif;
+  --font-body: 'Rubik', 'Segoe UI', sans-serif;
+  color-scheme: dark;
 }
 
 * {
@@ -18,10 +29,13 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: var(--ink);
-  color: var(--paper);
-  font-family: 'Inter', sans-serif;
-  min-height: 100vh;
+  min-height: 100%;
+  background-color: var(--felt);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-weight: 500;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #root {
@@ -30,4 +44,18 @@ body {
 
 button {
   font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--cream);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

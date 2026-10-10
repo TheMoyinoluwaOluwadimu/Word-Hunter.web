@@ -24,7 +24,7 @@ npm run typecheck  # types only
 If `npm install` ever fails with a "Cannot find native binding" error, delete `node_modules` and `package-lock.json` and run `npm install` again (this is a known npm bug with platform-specific packages). The project is pinned to Vite 6, which doesn't need a native bundler.
 
 `dist/` is plain static files. Drop it on Netlify, Vercel, GitHub Pages, or any static host.
-Routing uses `#/` and `#/play`, so no server rewrite rules are needed.
+Routing uses `#/`, `#/play`, `#/practice` and `#/practice/<file>`, so no server rewrite rules are needed.
 
 ## Changing today's puzzle
 
@@ -57,10 +57,12 @@ To use another puzzle (for example one exported from the puzzle generator), drop
 src/
   config.ts            which puzzle file + storage key
   types.ts             shared types
-  App.tsx              routes: "/" menu, "/play" game
+  App.tsx              routes: "/" menu, "/play" daily game, "/practice" archive, "/practice/:file" practice game
   pages/
     MainMenu.tsx       home screen (+ .module.css)
-    Game.tsx           game screen: timer, streak, solved overlay, leave prompt
+    Game.tsx           game screen (daily or practice): timer, streak, solved overlay, leave prompt
+    Practice.tsx       archive list of past puzzles with best times
+    PracticeGame.tsx   /practice/:file, only files in ARCHIVE_PUZZLE_FILES
   game/
     boardReducer.ts    the rules: placing, swapping, checking, locking (no UI)
     Board.tsx          drag-and-drop UI built on the reducer
@@ -79,3 +81,10 @@ public/puzzles/        puzzle JSON files
 - Solve on consecutive days: streak +1. Miss a day: back to 1. No grace period.
 - Replaying an already-solved day does not count again.
 - Stored in `localStorage` (key `wordhunter_state`), per browser, until there is a backend.
+
+## Practice (archive)
+
+- The Practice card on the menu opens `#/practice`, a list of past puzzles. Tapping one plays it at `#/practice/<file>`.
+- The list comes from `ARCHIVE_PUZZLE_FILES` in `src/config.ts`. When you change `DAILY_PUZZLE_FILE`, add the old file to that list.
+- Practice never changes the streak or the solved count. Each solve only saves the best time per puzzle, in `localStorage` under `wordhunter_practice`.
+- After a practice solve the player can replay, jump to the next puzzle in the list, or go back to the archive.

@@ -21,10 +21,13 @@ export function useTimer() {
     setStatus('running');
   }, []);
 
-  const stop = useCallback(() => {
-    if (startRef.current === null) return;
-    setElapsed(Math.floor((Date.now() - startRef.current) / 1000));
+  /** Stops the clock and returns the final time in seconds (null if it never started). */
+  const stop = useCallback((): number | null => {
+    if (startRef.current === null) return null;
+    const secs = Math.floor((Date.now() - startRef.current) / 1000);
+    setElapsed(secs);
     setStatus('stopped');
+    return secs;
   }, []);
 
   const reset = useCallback(() => {

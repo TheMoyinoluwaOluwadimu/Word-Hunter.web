@@ -23,6 +23,14 @@ interface DragState {
 }
 
 const TAP_DISTANCE = 6; // movement under this (px) counts as a tap
+const BLOCK_COLORS = 5;
+
+/** Picks one of the block paint colours from the chunk text, so a chunk always looks the same. */
+function blockColor(chunk: string): number {
+  let sum = 0;
+  for (let i = 0; i < chunk.length; i++) sum += chunk.charCodeAt(i);
+  return sum % BLOCK_COLORS;
+}
 
 export default function Board({ puzzle, onStart, onSolved }: BoardProps) {
   const [board, dispatch] = useReducer(boardReducer, puzzle, createBoard);
@@ -129,6 +137,7 @@ export default function Board({ puzzle, onStart, onSolved }: BoardProps) {
       <div
         key={tile.id}
         data-tile-id={tile.id}
+        data-k={blockColor(tile.chunk)}
         className={cx(
           styles.tile,
           isDragging && styles.dragging,
@@ -149,7 +158,7 @@ export default function Board({ puzzle, onStart, onSolved }: BoardProps) {
     board.phase === 'checking' || board.phase === 'revealing'
       ? 'Checking...'
       : board.phase === 'solved'
-        ? 'Case solved'
+        ? 'Puzzle solved'
         : (board.message ??
           (placedCount === 0
             ? 'Fill every slot, then it checks itself'

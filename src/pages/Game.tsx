@@ -1,40 +1,68 @@
 import { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ConfirmDialog from '../components/ConfirmDialog';
-import FireIcon from '../components/FireIcon';
-import { BackIcon } from '../components/icons';
-import { DAILY_PUZZLE_FILE } from '../config';
+import { BackIcon, StarIcon, StopwatchIcon, StreakIcon, TrophyIcon } from '../components/icons';
+import { ARCHIVE_PUZZLE_FILES, DAILY_PUZZLE_FILE } from '../config';
 import Board from '../game/Board';
 import styles from '../game/Game.module.css';
 import { usePlayerStats } from '../hooks/usePlayerStats';
+import { usePracticeProgress } from '../hooks/usePracticeProgress';
 import { usePuzzle } from '../hooks/usePuzzle';
 import { useTimer } from '../hooks/useTimer';
 import { formatTime } from '../lib/format';
 import { playSolvedSound } from '../lib/sound';
 import { hasSolvedToday, loadStats, timeUntilReset } from '../lib/storage';
 
-export default function Game() {
-  const puzzleState = usePuzzle(DAILY_PUZZLE_FILE);
+interface GameProps {
+  /** 'daily' is today's puzzle and feeds the streak. 'practice' is an archive puzzle and never does. */
+  mode?: 'daily' | 'practice';
+  /** Puzzle file inside public/puzzles/. */
+  file?: string;
+}
+
+interface SolveResult {
+  replay: boolean;
+  newBest: boolean;
+  best: number | null;
+}
+
+export default function Game({ mode = 'daily', file = DAILY_PUZZLE_FILE }: GameProps) {
+  const practice = mode === 'practice';
+  const puzzleState = usePuzzle(file);
   const { stats, registerSolve } = usePlayerStats();
+  const { progress, registerPracticeSolve } = usePracticeProgress();
   const timer = useTimer();
   const { start, stop, reset } = timer;
   const navigate = useNavigate();
 
+  const exitPath = practice ? '/practice' : '/';
+
   // Decided once on entry. If it were derived live, finishing today's puzzle would
-  // flip the page to the "case closed" screen underneath the solved overlay.
-  const [showClosed, setShowClosed] = useState(() => hasSolvedToday(loadStats()));
+  // flip the page to the "all done" screen underneath the solved overlay.
+  const [showClosed, setShowClosed] = useState(() => !practice && hasSolvedToday(loadStats()));
   const [boardKey, setBoardKey] = useState(0);
-  const [result, setResult] = useState<{ replay: boolean } | null>(null);
+  const [result, setResult] = useState<SolveResult | null>(null);
   const [confirmLeave, setConfirmLeave] = useState(false);
 
   const inProgress = timer.status === 'running' && result === null;
+  const bestSoFar = progress[file]?.best ?? null;
+
+  const nextFile = practice
+    ? ARCHIVE_PUZZLE_FILES[(ARCHIVE_PUZZLE_FILES.indexOf(file) + 1) % ARCHIVE_PUZZLE_FILES.length]
+    : null;
+  const hasNext = nextFile !== null && nextFile !== file;
 
   const handleSolved = useCallback(() => {
-    stop();
-    const { counted } = registerSolve();
+    const secs = stop();
     playSolvedSound();
-    setResult({ replay: !counted });
-  }, [stop, registerSolve]);
+    if (practice) {
+      const rec = secs === null ? null : registerPracticeSolve(file, secs);
+      setResult({ replay: false, newBest: rec?.newBest ?? false, best: rec?.best ?? null });
+    } else {
+      const { counted } = registerSolve();
+      setResult({ replay: !counted, newBest: false, best: null });
+    }
+  }, [stop, practice, file, registerPracticeSolve, registerSolve]);
 
   function playAgain() {
     setResult(null);
@@ -54,33 +82,51 @@ export default function Game() {
     puzzleState.status === 'ready'
       ? puzzleState.puzzle.theme
         ? `Theme: ${puzzleState.puzzle.theme}`
-        : "Today's puzzle"
+        : practice
+          ? 'Practice puzzle'
+          : "Today's puzzle"
       : puzzleState.status === 'error'
         ? 'Theme unavailable'
         : 'Theme';
 
+  const overlayTitle = result?.newBest ? 'New best!' : result?.replay ? 'Nice replay!' : 'Well built!';
+
   return (
     <div className={styles.stage}>
       <header className={styles.header}>
-        <div className={styles.headerTop}>
-          <Link to="/" className={styles.backBtn} aria-label="Back to menu" onClick={handleBackClick}>
-            <BackIcon />
-          </Link>
-          <div className={styles.stamp}>LIVE DEMO</div>
+        <Link
+          to={exitPath}
+          className={styles.backBtn}
+          aria-label={practice ? 'Back to archive' : 'Back to menu'}
+          onClick={handleBackClick}
+        >
+          <BackIcon />
+        </Link>
+        <div className={styles.headings}>
+          <p className={styles.eyebrow}>{practice ? 'Practice' : 'Puzzle of the Day'}</p>
+          <h1 className={styles.title}>Wordhunter</h1>
         </div>
-        <p className={styles.eyebrow}>Puzzle of the Day</p>
-        <h1 className={styles.title}>Wordhunter</h1>
+        <div className={styles.stamp}>{practice ? 'PRACTICE' : 'LIVE DEMO'}</div>
       </header>
 
       <div className={styles.metaRow}>
         <div className={styles.metaItem}>
-          <span className={styles.dot} />
+          <StopwatchIcon />
           <span data-testid="timer">{formatTime(timer.elapsed)}</span>
         </div>
-        <div className={styles.streak}>
-          <FireIcon />
-          <span data-testid="streak">{stats.streak}</span>
-        </div>
+        {practice ? (
+          bestSoFar !== null && (
+            <div className={styles.streak} title="Your fastest time on this puzzle">
+              <TrophyIcon />
+              <span data-testid="best">{formatTime(bestSoFar)}</span>
+            </div>
+          )
+        ) : (
+          <div className={styles.streak}>
+            <StreakIcon />
+            <span data-testid="streak">{stats.streak}</span>
+          </div>
+        )}
       </div>
 
       <div className={styles.themeBanner}>
@@ -105,8 +151,25 @@ export default function Game() {
             {puzzleState.message}
             <br />
             <br />
-            Check that <code>public/puzzles/{DAILY_PUZZLE_FILE}</code> exists and that <code>DAILY_PUZZLE_FILE</code> in{' '}
-            <code>src/config.ts</code> matches its name.
+            Check that <code>public/puzzles/{file}</code> exists
+            {practice ? (
+              <>
+                {' '}
+                and is listed in <code>ARCHIVE_PUZZLE_FILES</code> in <code>src/config.ts</code>.
+              </>
+            ) : (
+              <>
+                {' '}
+                and that <code>DAILY_PUZZLE_FILE</code> in <code>src/config.ts</code> matches its name.
+              </>
+            )}
+            {practice && (
+              <div className={styles.noticeActions} style={{ marginTop: 14 }}>
+                <Link to="/practice" className={styles.secondaryBtn}>
+                  Back to archive
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -114,13 +177,13 @@ export default function Game() {
       {puzzleState.status === 'ready' && showClosed && (
         <div className={styles.words}>
           <div className={styles.notice}>
-            <p className={styles.noticeEyebrow}>Case closed</p>
+            <p className={styles.noticeEyebrow}>All done</p>
             <p className={styles.noticeText}>
               You already solved today's {puzzleState.puzzle.theme ?? 'puzzle'}.
             </p>
-            <p className={styles.noticeDim}>Next case in {timeUntilReset()}</p>
+            <p className={styles.noticeDim}>Next puzzle in {timeUntilReset()}</p>
             <p className={styles.noticeStreak}>
-              <FireIcon /> Streak: {stats.streak}
+              <StreakIcon /> Streak: {stats.streak}
             </p>
             <div className={styles.noticeActions}>
               <button type="button" className={styles.secondaryBtn} onClick={() => setShowClosed(false)}>
@@ -140,20 +203,40 @@ export default function Game() {
 
       {result && (
         <div className={styles.overlay} role="dialog" aria-label="Puzzle solved">
-          <p className={styles.overlayBig}>{result.replay ? 'Nice replay!' : 'Solved!'}</p>
+          <div className={styles.stars} aria-hidden="true">
+            <StarIcon />
+            <StarIcon />
+            <StarIcon />
+          </div>
+          <p className={styles.overlayBig}>{overlayTitle}</p>
           <div className={styles.overlayTime} data-testid="final-time">
             {formatTime(timer.elapsed)}
           </div>
-          <div className={styles.overlayFire}>
-            <FireIcon size={22} />
-            <span data-testid="final-streak">{stats.streak}</span>
-          </div>
+          {practice ? (
+            result.best !== null && (
+              <div className={styles.overlayFire}>
+                <TrophyIcon size={24} />
+                <span data-testid="final-best">Best {formatTime(result.best)}</span>
+              </div>
+            )
+          ) : (
+            <div className={styles.overlayFire}>
+              <StreakIcon size={26} />
+              <span data-testid="final-streak">{stats.streak}</span>
+            </div>
+          )}
+          {practice && <p className={styles.overlayNote}>Practice doesn't count toward your streak.</p>}
           <div className={styles.overlayActions}>
             <button type="button" className={styles.primaryBtn} onClick={playAgain}>
               Play again
             </button>
-            <Link to="/" className={styles.secondaryBtn}>
-              Main menu
+            {hasNext && nextFile && (
+              <Link to={`/practice/${nextFile}`} className={styles.secondaryBtn} replace>
+                Next puzzle
+              </Link>
+            )}
+            <Link to={exitPath} className={styles.secondaryBtn}>
+              {practice ? 'Back to archive' : 'Main menu'}
             </Link>
           </div>
         </div>
@@ -172,7 +255,7 @@ export default function Game() {
         cancelLabel="Keep playing"
         onConfirm={() => {
           setConfirmLeave(false);
-          navigate('/');
+          navigate(exitPath);
         }}
         onCancel={() => setConfirmLeave(false)}
       />
