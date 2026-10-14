@@ -1,0 +1,226 @@
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) 24px calc(24px + env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
+  cursor: pointer;
+  /* same felt as the rest of the app, so the fade-out is seamless */
+  background-color: var(--felt);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+  transition: opacity 450ms ease;
+}
+
+/* stitched edge of the felt mat */
+.splash::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 2px dashed rgba(255, 244, 220, 0.32);
+  border-radius: 27px;
+  pointer-events: none;
+}
+
+.leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* colors shared by blocks and confetti */
+.red {
+  background: var(--red);
+  color: var(--cream);
+  --edge: var(--red-d);
+}
+.blue {
+  background: var(--blue);
+  color: var(--cream);
+  --edge: var(--blue-d);
+}
+.yellow {
+  background: var(--yellow);
+  color: var(--brown);
+  --edge: var(--yellow-d);
+}
+.green {
+  background: var(--green);
+  color: var(--cream);
+  --edge: var(--green-d);
+}
+.orange {
+  background: var(--orange);
+  color: var(--brown);
+  --edge: #b3600f;
+}
+
+/* the logo: blocks that fly in and snap together */
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.tile {
+  display: block;
+  animation: snapIn 0.85s cubic-bezier(0.3, 0.9, 0.4, 1) var(--delay) backwards;
+}
+
+.face {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(38px, 12vw, 54px);
+  line-height: 1;
+  letter-spacing: 1px;
+  padding: 10px 16px 12px;
+  border-radius: 14px;
+  box-shadow: 0 7px 0 var(--edge), 0 12px 16px rgba(0, 0, 0, 0.35), inset 0 3px 0 rgba(255, 255, 255, 0.35);
+  /* a gentle wave once everything has landed */
+  animation: bob 1.6s ease-in-out calc(var(--delay) + 1s) infinite;
+}
+
+@keyframes snapIn {
+  0% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0.5);
+  }
+  55% {
+    opacity: 1;
+    transform: translate(0, -16px) rotate(0deg) scale(1.08);
+  }
+  75% {
+    transform: translate(0, 3px) scale(1.04, 0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.tagline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  color: var(--cream);
+  animation: fadeUp 0.6s ease 1.2s backwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* loading bar + tip */
+.loader {
+  width: min(260px, 70vw);
+  text-align: center;
+  animation: fadeUp 0.6s ease 1.4s backwards;
+}
+
+.track {
+  height: 14px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 2px solid var(--cream);
+  border-radius: 99px;
+  padding: 2px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  width: 100%;
+  border-radius: 99px;
+  background: var(--yellow);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45);
+  transform-origin: left center;
+  animation: fill 2.3s ease-in-out 0.2s backwards;
+}
+
+@keyframes fill {
+  from {
+    transform: scaleX(0.04);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.tip {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--cream-dim);
+}
+
+.skip {
+  position: absolute;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255, 244, 220, 0.5);
+  animation: fadeUp 0.6s ease 2s backwards;
+}
+
+/* drifting confetti blocks */
+.confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bit {
+  position: absolute;
+  bottom: -20px;
+  border-radius: 3px;
+  opacity: 0.85;
+  animation: drift 4.2s linear infinite;
+}
+
+@keyframes drift {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-110vh) rotate(300deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bit {
+    display: none;
+  }
+}

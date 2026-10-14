@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { IconSprite } from './components/icons';
+import SplashScreen from './components/SplashScreen';
 import Game from './pages/Game';
 import MainMenu from './pages/MainMenu';
 import Practice from './pages/Practice';
@@ -9,6 +10,7 @@ export default function App() {
   return (
     <>
       <IconSprite />
+      <SplashScreen />
       <Routes>
         <Route path="/" element={<MainMenu />} />
         <Route path="/play" element={<Game />} />
