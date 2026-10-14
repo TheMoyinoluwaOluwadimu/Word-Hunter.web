@@ -3,6 +3,22 @@ import type { FormEvent } from 'react';
 import { useAuth } from '../auth/AuthProvider';
 import styles from './AccountDialog.module.css';
 
+const COOLDOWN_SECONDS = 60;
+
+/** Turns Supabase's raw auth errors into something a player can act on. */
+function explain(message: string): { text: string; wait?: number } {
+  // Per-address cooldown: "...you can only request this after 52 seconds."
+  const secs = message.match(/after (\d+) seconds?/i);
+  if (secs) return { text: `Please wait ${secs[1]} seconds before asking for another link.`, wait: Number(secs[1]) };
+  if (/rate limit|too many/i.test(message)) {
+    return {
+      text: 'Too many sign-in emails right now. Try Google, or wait a bit and try again.',
+      wait: COOLDOWN_SECONDS,
+    };
+  }
+  return { text: message };
+}
+
 interface AccountDialogProps {
   open: boolean;
   onClose: () => void;
@@ -16,6 +32,22 @@ export default function AccountDialog({ open, onClose }: AccountDialogProps) {
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  // Deliberately not reset when the dialog reopens, so closing it can't dodge the cooldown.
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
+  const secondsLeft = Math.max(0, Math.ceil((cooldownUntil - now) / 1000));
+
+  useEffect(() => {
+    if (cooldownUntil <= Date.now()) return;
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, [cooldownUntil]);
+
+  function startCooldown(seconds: number) {
+    const t = Date.now();
+    setNow(t);
+    setCooldownUntil(t + seconds * 1000);
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -42,14 +74,21 @@ export default function AccountDialog({ open, onClose }: AccountDialogProps) {
     setError(null);
     const message = await action();
     setBusy(false);
-    if (message) setError(message);
+    if (message) {
+      const { text, wait } = explain(message);
+      setError(text);
+      if (wait) startCooldown(wait);
+    }
     return !message;
   }
 
-  async function onEmailSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!email.trim()) return;
-    if (await run(() => signInWithEmail(email.trim()))) setSent(true);
+  async function onEmailSubmit(e?: FormEvent) {
+    e?.preventDefault();
+    if (!email.trim() || secondsLeft > 0) return;
+    if (await run(() => signInWithEmail(email.trim()))) {
+      setSent(true);
+      startCooldown(COOLDOWN_SECONDS);
+    }
   }
 
   return (
@@ -76,9 +115,18 @@ export default function AccountDialog({ open, onClose }: AccountDialogProps) {
               )}
             </>
           ) : sent ? (
-            <p className={styles.text}>
-              Check <strong>{email}</strong> for a sign-in link. You can close this window.
-            </p>
+            <>
+              <p className={styles.text}>
+                Check <strong>{email}</strong> for a sign-in link. You can close this window.
+              </p>
+              <p className={styles.dim}>Nothing yet? Look in spam, or wait a minute for a new link.</p>
+              <button type="button" className={styles.emailBtn} disabled={busy || secondsLeft > 0} onClick={onEmailSubmit}>
+                {secondsLeft > 0 ? `Resend in ${secondsLeft}s` : 'Resend link'}
+              </button>
+              <button type="button" className={styles.linkBtn} onClick={() => setSent(false)}>
+                Use a different email
+              </button>
+            </>
           ) : (
             <>
               <p className={styles.text}>Save your streak and play on any device. Your progress so far is kept.</p>
@@ -96,8 +144,8 @@ export default function AccountDialog({ open, onClose }: AccountDialogProps) {
                   className={styles.input}
                   aria-label="Email address"
                 />
-                <button type="submit" className={styles.emailBtn} disabled={busy}>
-                  Email me a link
+                <button type="submit" className={styles.emailBtn} disabled={busy || secondsLeft > 0}>
+                  {secondsLeft > 0 ? `Wait ${secondsLeft}s` : 'Email me a link'}
                 </button>
               </form>
             </>

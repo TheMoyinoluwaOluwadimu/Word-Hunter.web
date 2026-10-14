@@ -158,3 +158,15 @@
   opacity: 0.6;
   cursor: default;
 }
+
+.linkBtn {
+  align-self: center;
+  background: none;
+  border: 0;
+  padding: 4px;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--blue-d);
+  text-decoration: underline;
+  cursor: pointer;
+}
