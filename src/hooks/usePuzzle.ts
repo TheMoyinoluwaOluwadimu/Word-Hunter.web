@@ -7,13 +7,17 @@ export type PuzzleState =
   | { status: 'ready'; puzzle: Puzzle }
   | { status: 'error'; message: string };
 
-/** Loads a puzzle file. Nothing theme-related renders until status is 'ready', so no placeholder flash. */
-export function usePuzzle(file: string): PuzzleState {
+/**
+ * Loads a puzzle file. Nothing theme-related renders until status is 'ready', so no placeholder flash.
+ * A null file (not known yet, e.g. the schedule is still loading) stays in 'loading'.
+ */
+export function usePuzzle(file: string | null): PuzzleState {
   const [state, setState] = useState<PuzzleState>({ status: 'loading' });
 
   useEffect(() => {
-    const ctrl = new AbortController();
     setState({ status: 'loading' });
+    if (file === null) return;
+    const ctrl = new AbortController();
     fetchPuzzle(file, ctrl.signal)
       .then((puzzle) => setState({ status: 'ready', puzzle }))
       .catch((err: unknown) => {

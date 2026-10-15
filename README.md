@@ -26,15 +26,15 @@ If `npm install` ever fails with a "Cannot find native binding" error, delete `n
 `dist/` is plain static files. Drop it on Netlify, Vercel, GitHub Pages, or any static host.
 Routing uses `#/`, `#/play`, `#/practice` and `#/practice/<file>`, so no server rewrite rules are needed.
 
-## Changing today's puzzle
+## Daily puzzle (automatic)
 
-Puzzle files live in `public/puzzles/`. The one used is set in `src/config.ts`:
+Nothing to edit per day. Puzzle files live in `public/puzzles/`, and the app picks today's by UTC date:
 
-```ts
-export const DAILY_PUZZLE_FILE = 'OceanLife.json';
-```
-
-To use another puzzle (for example one exported from the puzzle generator), drop its `.json` into `public/puzzles/` and change that line.
+- `npm run dev` / `npm run build` first run `scripts/build-puzzle-index.mjs`, which lists every `.json` in that folder (sorted by file name, numbers sort naturally) into `public/puzzles/index.json` and fails if a file is invalid.
+- Today's puzzle is file number `days since LAUNCH_DATE` (in `src/config.ts`) in that list, wrapping around when it reaches the end.
+- To add a puzzle: drop the `.json` in `public/puzzles/` and redeploy. **Name it so it sorts after the existing ones** (or use a numeric prefix like `005-Space.json`); inserting one earlier shifts every later day's puzzle.
+- Add puzzles before the list runs out, or the cycle repeats from the start.
+- Don't change `LAUNCH_DATE` once players exist.
 
 ### Puzzle file format
 
@@ -62,7 +62,7 @@ src/
     MainMenu.tsx       home screen (+ .module.css)
     Game.tsx           game screen (daily or practice): timer, streak, solved overlay, leave prompt
     Practice.tsx       archive list of past puzzles with best times
-    PracticeGame.tsx   /practice/:file, only files in ARCHIVE_PUZZLE_FILES
+    PracticeGame.tsx   /practice/:file, only already-played puzzles
   game/
     boardReducer.ts    the rules: placing, swapping, checking, locking (no UI)
     Board.tsx          drag-and-drop UI built on the reducer
@@ -85,6 +85,6 @@ public/puzzles/        puzzle JSON files
 ## Practice (archive)
 
 - The Practice card on the menu opens `#/practice`, a list of past puzzles. Tapping one plays it at `#/practice/<file>`.
-- The list comes from `ARCHIVE_PUZZLE_FILES` in `src/config.ts`. When you change `DAILY_PUZZLE_FILE`, add the old file to that list.
+- The list is every puzzle that has already been the daily (newest first), derived from the schedule. Today's puzzle is not in it, and future ones stay hidden.
 - Practice never changes the streak or the solved count. Each solve only saves the best time per puzzle, in `localStorage` under `wordchunk_practice`.
 - After a practice solve the player can replay, jump to the next puzzle in the list, or go back to the archive.

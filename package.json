@@ -4,7 +4,10 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "puzzles:index": "node scripts/build-puzzle-index.mjs",
+    "predev": "npm run puzzles:index",
     "dev": "vite",
+    "prebuild": "npm run puzzles:index",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"

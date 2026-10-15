@@ -11,19 +11,20 @@ import {
   StreakIcon,
   TrophyIcon,
 } from '../components/icons';
-import { DAILY_PUZZLE_FILE } from '../config';
 import { useNow } from '../hooks/useNow';
 import { usePlayerStats } from '../hooks//usePlayerStats';
 import { usePuzzle } from '../hooks/usePuzzle';
+import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
 import { cx } from '../lib/cx';
 import { hasSolvedToday, timeUntilReset } from '../lib/storage';
 // @ts-ignore CSS modules are handled by the app bundler.
 import styles from './MainMenu.module.css';
 
 export default function MainMenu() {
-  const puzzleState = usePuzzle(DAILY_PUZZLE_FILE);
-  const { stats } = usePlayerStats();
   const now = useNow(30_000);
+  const sched = usePuzzleSchedule(now);
+  const puzzleState = usePuzzle(sched.status === 'ready' ? sched.schedule.daily : null);
+  const { stats } = usePlayerStats();
   const solvedToday = hasSolvedToday(stats, now);
   const { enabled, user, displayName } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);

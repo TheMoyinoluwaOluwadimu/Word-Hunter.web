@@ -2,12 +2,13 @@ import { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { BackIcon, StarIcon, StopwatchIcon, StreakIcon, TrophyIcon } from '../components/icons';
-import { ARCHIVE_PUZZLE_FILES, DAILY_PUZZLE_FILE } from '../config';
 import Board from '../game/Board';
 import styles from '../game/Game.module.css';
 import { usePlayerStats } from '../hooks/usePlayerStats';
 import { usePracticeProgress } from '../hooks/usePracticeProgress';
 import { usePuzzle } from '../hooks/usePuzzle';
+import type { PuzzleState } from '../hooks/usePuzzle';
+import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
 import { useTimer } from '../hooks/useTimer';
 import { formatTime } from '../lib/format';
 import { playSolvedSound } from '../lib/sound';
@@ -16,7 +17,7 @@ import { hasSolvedToday, loadStats, timeUntilReset } from '../lib/storage';
 interface GameProps {
   /** 'daily' is today's puzzle and feeds the streak. 'practice' is an archive puzzle and never does. */
   mode?: 'daily' | 'practice';
-  /** Puzzle file inside public/puzzles/. */
+  /** Practice only: the archive puzzle file inside public/puzzles/. The daily puzzle is picked by date. */
   file?: string;
 }
 
@@ -26,9 +27,14 @@ interface SolveResult {
   best: number | null;
 }
 
-export default function Game({ mode = 'daily', file = DAILY_PUZZLE_FILE }: GameProps) {
+export default function Game({ mode = 'daily', file: practiceFile }: GameProps) {
   const practice = mode === 'practice';
-  const puzzleState = usePuzzle(file);
+  const sched = usePuzzleSchedule();
+  const file = practice ? (practiceFile ?? null) : sched.status === 'ready' ? sched.schedule.daily : null;
+  const loaded = usePuzzle(file);
+  const puzzleState: PuzzleState =
+    sched.status === 'error' && !practice ? { status: 'error', message: sched.message } : loaded;
+  const archive = sched.status === 'ready' ? sched.schedule.archive : [];
   const { stats, registerSolve } = usePlayerStats();
   const { progress, registerPracticeSolve } = usePracticeProgress();
   const timer = useTimer();
@@ -45,18 +51,17 @@ export default function Game({ mode = 'daily', file = DAILY_PUZZLE_FILE }: GameP
   const [confirmLeave, setConfirmLeave] = useState(false);
 
   const inProgress = timer.status === 'running' && result === null;
-  const bestSoFar = progress[file]?.best ?? null;
+  const bestSoFar = (file && progress[file]?.best) || null;
 
-  const nextFile = practice
-    ? ARCHIVE_PUZZLE_FILES[(ARCHIVE_PUZZLE_FILES.indexOf(file) + 1) % ARCHIVE_PUZZLE_FILES.length]
-    : null;
+  const nextFile =
+    practice && file && archive.length > 0 ? archive[(archive.indexOf(file) + 1) % archive.length] : null;
   const hasNext = nextFile !== null && nextFile !== file;
 
   const handleSolved = useCallback(() => {
     const secs = stop();
     playSolvedSound();
     if (practice) {
-      const rec = secs === null ? null : registerPracticeSolve(file, secs);
+      const rec = secs === null || !file ? null : registerPracticeSolve(file, secs);
       setResult({ replay: false, newBest: rec?.newBest ?? false, best: rec?.best ?? null });
     } else {
       const { counted } = registerSolve();
@@ -151,18 +156,8 @@ export default function Game({ mode = 'daily', file = DAILY_PUZZLE_FILE }: GameP
             {puzzleState.message}
             <br />
             <br />
-            Check that <code>public/puzzles/{file}</code> exists
-            {practice ? (
-              <>
-                {' '}
-                and is listed in <code>ARCHIVE_PUZZLE_FILES</code> in <code>src/config.ts</code>.
-              </>
-            ) : (
-              <>
-                {' '}
-                and that <code>DAILY_PUZZLE_FILE</code> in <code>src/config.ts</code> matches its name.
-              </>
-            )}
+            Check that the puzzle files in <code>public/puzzles/</code> are valid JSON and that{' '}
+            <code>npm run puzzles:index</code> has been run.
             {practice && (
               <div className={styles.noticeActions} style={{ marginTop: 14 }}>
                 <Link to="/practice" className={styles.secondaryBtn}>

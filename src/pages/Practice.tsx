@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BackIcon, CheckIcon, StopwatchIcon } from '../components/icons';
-import { ARCHIVE_PUZZLE_FILES } from '../config';
 import { usePracticeProgress } from '../hooks/usePracticeProgress';
+import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
 import { cx } from '../lib/cx';
 import { formatTime } from '../lib/format';
 import { fetchPuzzle } from '../lib/puzzle';
@@ -16,18 +16,22 @@ type Summary =
 
 const BLOCK_COLORS = ['red', 'blue', 'yellow', 'orange', 'green'] as const;
 
+const EMPTY: string[] = [];
+
 function fallbackTheme(file: string): string {
   return file.replace(/\.json$/i, '');
 }
 
 export default function Practice() {
   const { progress } = usePracticeProgress();
+  const sched = usePuzzleSchedule();
+  const archiveFiles = sched.status === 'ready' ? sched.schedule.archive : EMPTY;
   const [summaries, setSummaries] = useState<Record<string, Summary>>({});
 
   // Each file is read once, only for its theme and word count.
   useEffect(() => {
     const ctrl = new AbortController();
-    for (const file of ARCHIVE_PUZZLE_FILES) {
+    for (const file of archiveFiles) {
       fetchPuzzle(file, ctrl.signal)
         .then((p) =>
           setSummaries((s) => ({
@@ -40,10 +44,10 @@ export default function Practice() {
         });
     }
     return () => ctrl.abort();
-  }, []);
+  }, [archiveFiles]);
 
-  const solvedCount = ARCHIVE_PUZZLE_FILES.filter((f) => progress[f] !== undefined).length;
-  const total = ARCHIVE_PUZZLE_FILES.length;
+  const solvedCount = archiveFiles.filter((f) => progress[f] !== undefined).length;
+  const total = archiveFiles.length;
 
   return (
     <div className={styles.stage}>
@@ -62,14 +66,21 @@ export default function Practice() {
 
       <p className={styles.intro}>Pick any past puzzle and play it as often as you like. Practice never counts toward your streak.</p>
 
-      {total === 0 ? (
+      {sched.status === 'loading' ? (
+        <p className={styles.intro}>Loading...</p>
+      ) : sched.status === 'error' ? (
+        <div className={styles.empty}>
+          <p className={styles.emptyTitle}>Couldn't load the archive</p>
+          <p className={styles.emptyText}>{sched.message}</p>
+        </div>
+      ) : total === 0 ? (
         <div className={styles.empty}>
           <p className={styles.emptyTitle}>No past puzzles yet</p>
           <p className={styles.emptyText}>Yesterday's puzzle will show up here tomorrow.</p>
         </div>
       ) : (
         <ul className={styles.list}>
-          {ARCHIVE_PUZZLE_FILES.map((file, i) => {
+          {archiveFiles.map((file, i) => {
             const summary: Summary = summaries[file] ?? { status: 'loading' };
             const entry = progress[file];
             const theme = summary.status === 'ready' ? summary.theme : fallbackTheme(file);
