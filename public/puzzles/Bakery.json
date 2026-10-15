@@ -1,0 +1,47 @@
+{
+    "theme": "bakery",
+    "generated_at": "2026-10-15T22:45:01.454Z",
+    "source": "dictionaryapi.dev (primary) + datamuse md=d (fallback), auto-suggested chunks, human-reviewed",
+    "puzzle": [
+        {
+            "word": "A person who bakes and sells bread",
+            "answer": "baker",
+            "chunks": [
+                "ba",
+                "ker"
+            ]
+        },
+        {
+            "word": "A foodstuff made by baking dough",
+            "answer": "bread",
+            "chunks": [
+                "bread"
+            ]
+        },
+        {
+            "word": "A baked food item made from dough",
+            "answer": "pastry",
+            "chunks": [
+                "pa",
+                "stry"
+            ]
+        },
+        {
+            "word": "A convenience store",
+            "answer": "cafe",
+            "chunks": [
+                "ca",
+                "fe"
+            ]
+        },
+        {
+            "word": "buttery, flaky, crescent‑shaped pastry",
+            "answer": "croissant",
+            "chunks": [
+                "cro",
+                "is",
+                "sant"
+            ]
+        }
+    ]
+}
