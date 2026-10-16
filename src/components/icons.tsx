@@ -2,7 +2,7 @@ interface IconProps {
   size?: number;
 }
 
-type IconName = 'bolt' | 'gear' | 'trophy' | 'shield' | 'book' | 'stopwatch' | 'clock' | 'back' | 'star' | 'check';
+type IconName = 'bolt' | 'gear' | 'trophy' | 'book' | 'stopwatch' | 'clock' | 'back' | 'star' | 'check';
 
 function GlossyIcon({ name, size }: IconProps & { name: IconName }) {
   return (
@@ -20,7 +20,17 @@ function GlossyIcon({ name, size }: IconProps & { name: IconName }) {
 export const StreakIcon = ({ size = 22 }: IconProps) => <GlossyIcon name="bolt" size={size} />;
 export const SettingsIcon = ({ size = 28 }: IconProps) => <GlossyIcon name="gear" size={size} />;
 export const TrophyIcon = ({ size = 18 }: IconProps) => <GlossyIcon name="trophy" size={size} />;
-export const ChallengeIcon = ({ size = 46 }: IconProps) => <GlossyIcon name="shield" size={size} />;
+/** The shield from icons/shield.svg (served from public/icons), same drop shadow as the sprite icons. */
+export const ChallengeIcon = ({ size = 46 }: IconProps) => (
+  <img
+    src={`${import.meta.env.BASE_URL}icons/shield.svg`}
+    alt=""
+    aria-hidden="true"
+    width={size}
+    height={size}
+    style={{ display: 'block', flexShrink: 0, filter: 'drop-shadow(0 2px 0 rgba(0, 0, 0, 0.28))' }}
+  />
+);
 export const ArchiveIcon = ({ size = 46 }: IconProps) => <GlossyIcon name="book" size={size} />;
 export const StopwatchIcon = ({ size = 22 }: IconProps) => <GlossyIcon name="stopwatch" size={size} />;
 export const ClockIcon = ({ size = 18 }: IconProps) => <GlossyIcon name="clock" size={size} />;
@@ -48,10 +58,6 @@ export function IconSprite() {
         <linearGradient id="gTeal" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#6df0e6" />
           <stop offset="1" stopColor="#1291a8" />
-        </linearGradient>
-        <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#4a8fd2" />
-          <stop offset="1" stopColor="#1d4a88" />
         </linearGradient>
         <linearGradient id="gBook" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#ffae55" />
@@ -96,15 +102,6 @@ export function IconSprite() {
         <path d="M21 11v11c0 6 2 10 5 13" fill="none" stroke="#fff" strokeOpacity=".7" strokeWidth="3.5" strokeLinecap="round" />
       </symbol>
 
-      <symbol id="g-shield" viewBox="0 0 64 64">
-        <path d="M32 3 L57 11 V30 C57 46 46 56 32 62 C18 56 7 46 7 30 V11 Z" fill="url(#gGold)" stroke="#a86a00" strokeWidth="3.5" strokeLinejoin="round" paintOrder="stroke" />
-        <path d="M32 3 L57 11 V30 C57 46 46 56 32 62 C18 56 7 46 7 30 V11 Z" transform="translate(32 32) scale(.78) translate(-32 -32)" fill="url(#gBlue)" stroke="#143562" strokeWidth="3" />
-        <path d="M13 43c0-6 3-9 8-9s8 3 8 9zM35 43c0-6 3-9 8-9s8 3 8 9z" fill="#9db8d8" />
-        <circle cx="21" cy="28" r="4" fill="#9db8d8" />
-        <circle cx="43" cy="28" r="4" fill="#9db8d8" />
-        <path d="M20 46c0-8 5-11 12-11s12 3 12 11z" fill="#dbe8f7" />
-        <circle cx="32" cy="25" r="6" fill="#dbe8f7" />
-      </symbol>
 
       <symbol id="g-book" viewBox="0 0 64 64">
         <rect x="15" y="10" width="40" height="48" rx="5" fill="#fff4dc" stroke="#8a3a0c" strokeWidth="3.5" />

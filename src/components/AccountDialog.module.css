@@ -168,3 +168,20 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.fieldLabel {
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.fieldHint {
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.ok {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--green-d);
+}

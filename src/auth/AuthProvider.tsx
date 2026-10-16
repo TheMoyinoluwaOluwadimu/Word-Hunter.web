@@ -16,6 +16,8 @@ interface AuthContextValue {
   signInWithGoogle: () => Promise<string | null>;
   signInWithEmail: (email: string) => Promise<string | null>;
   signOut: () => Promise<void>;
+  /** Changes the name other players see. Returns an error message, or null on success. */
+  updateUsername: (name: string) => Promise<string | null>;
   deleteAccount: () => Promise<string | null>;
 }
 
@@ -50,6 +52,7 @@ function nameOf(user: User | null): string {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(supabase !== null);
+  const [profileName, setProfileName] = useState<string | null>(null);
 
   useEffect(() => {
     if (!supabase) return;
@@ -69,6 +72,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (userId) void syncOnSignIn(userId);
   }, [userId]);
+
+  // The name opponents see lives on the profile, so it can be changed without touching the login.
+  useEffect(() => {
+    if (!supabase || !userId) {
+      setProfileName(null);
+      return;
+    }
+    let live = true;
+    supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', userId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (live) setProfileName(data?.username?.trim() || null);
+      });
+    return () => {
+      live = false;
+    };
+  }, [userId]);
+
+  const updateUsername = useCallback(
+    async (name: string) => {
+      if (!supabase || !userId) return 'Sign in first.';
+      const clean = name.trim().replace(/\s+/g, ' ');
+      if (clean.length < 2 || clean.length > 24) return 'Use 2 to 24 characters.';
+      // upsert: an account that predates the profile trigger has no row yet
+      const { error } = await supabase.from('profiles').upsert({ id: userId, username: clean });
+      if (error) return error.message;
+      setProfileName(clean);
+      return null;
+    },
+    [userId],
+  );
 
   const signInWithGoogle = useCallback(async () => {
     if (!supabase) return 'Sign-in is not configured.';
@@ -112,13 +149,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       enabled: supabase !== null,
       user,
       loading,
-      displayName: nameOf(user),
+      displayName: profileName || nameOf(user),
       signInWithGoogle,
       signInWithEmail,
       signOut,
+      updateUsername,
       deleteAccount,
     }),
-    [user, loading, signInWithGoogle, signInWithEmail, signOut, deleteAccount],
+    [user, loading, profileName, signInWithGoogle, signInWithEmail, signOut, updateUsername, deleteAccount],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

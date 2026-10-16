@@ -1,0 +1,366 @@
+/* Leaderboard. Sits inside Game.module.css's .stage; block colours come from Challenge.module.css. */
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 14px;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.tab {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: 17px;
+  letter-spacing: 0.5px;
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 0;
+  background: transparent;
+  color: var(--cream);
+  cursor: pointer;
+}
+
+.tabOn {
+  background: var(--yellow);
+  color: var(--brown);
+  box-shadow: 0 3px 0 var(--yellow-d), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+}
+
+.subRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-inline: 4px;
+  font-size: 13px;
+  color: var(--cream-dim);
+}
+
+.subRow strong {
+  color: var(--cream);
+}
+
+.reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+}
+
+/* everyone / friends */
+.scope {
+  align-self: flex-start;
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 99px;
+}
+
+.scopeBtn {
+  font-size: 13px;
+  font-weight: 600;
+  border: 0;
+  border-radius: 99px;
+  padding: 5px 16px;
+  background: transparent;
+  color: var(--cream);
+  cursor: pointer;
+}
+
+.scopeOn {
+  background: var(--cream);
+  color: var(--brown);
+}
+
+/* podium */
+.podium {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.podiumCol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 24px;
+  box-shadow: 0 4px 0 var(--edge), inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+.avatarFirst {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  font-size: 28px;
+}
+
+.avatarMe {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+.podiumName {
+  margin: 0;
+  max-width: 100%;
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.podiumNameFirst {
+  font-size: 14px;
+}
+
+.podiumValue {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.podiumValueFirst {
+  font-size: 22px;
+  color: var(--yellow);
+}
+
+.pedestal {
+  width: 100%;
+  border-radius: 12px 12px 6px 6px;
+  display: grid;
+  place-items: center;
+}
+
+.pedestal0 {
+  background: var(--yellow);
+  box-shadow: 0 5px 0 var(--yellow-d), inset 0 3px 0 rgba(255, 255, 255, 0.45);
+}
+
+.pedestal1 {
+  background: #a8b4c4;
+  box-shadow: 0 5px 0 #6d7a8c, inset 0 3px 0 rgba(255, 255, 255, 0.4);
+}
+
+.pedestal2 {
+  background: #d99a5b;
+  box-shadow: 0 5px 0 #9a6428, inset 0 3px 0 rgba(255, 255, 255, 0.35);
+}
+
+.valueWithIcon {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.unit {
+  font-family: var(--font-body);
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+/* the rest of the top 20 */
+.listWrap {
+  position: relative;
+  margin-top: 6px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: rgba(255, 244, 220, 0.08);
+  border-radius: 10px;
+}
+
+.rowMe {
+  background: var(--cream);
+  color: var(--brown);
+}
+
+.rowRank {
+  width: 28px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+
+.avatarSm {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 16px;
+  box-shadow: 0 2px 0 var(--edge);
+}
+
+.rowName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowMe .rowName {
+  font-weight: 600;
+}
+
+.rowValue {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* signed-out: a taste of the list that fades into the sign-in card */
+.fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(31, 107, 87, 0), var(--felt) 92%);
+  pointer-events: none;
+}
+
+.joinCard {
+  margin-top: auto;
+  margin-bottom: 26px;
+  background: var(--cream);
+  color: var(--brown);
+  border-radius: 18px;
+  padding: 20px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  box-shadow: 0 6px 0 var(--wood-d), 0 12px 18px rgba(0, 0, 0, 0.3);
+}
+
+.joinCard > button {
+  align-self: stretch;
+}
+
+.joinTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.05;
+}
+
+.joinText {
+  margin: 0;
+  max-width: 270px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.joinFine {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* your own row, pinned to the bottom of the screen */
+.pinned {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin-top: auto;
+  padding: 18px 0 calc(22px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, rgba(31, 107, 87, 0.97) 70%, rgba(31, 107, 87, 0));
+}
+
+.meRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--cream);
+  color: var(--brown);
+  border-radius: 14px;
+  box-shadow: 0 5px 0 var(--yellow-d), 0 9px 12px rgba(0, 0, 0, 0.25);
+}
+
+.meRank {
+  flex: none;
+  min-width: 44px;
+  height: 34px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--yellow);
+  font-family: var(--font-display);
+  font-size: 18px;
+  box-shadow: 0 3px 0 var(--yellow-d);
+}
+
+.meRankNone {
+  background: var(--cream-dim);
+  box-shadow: 0 3px 0 var(--paper-edge);
+}
+
+.meText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.meText strong {
+  font-weight: 600;
+}
+
+.meGap {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.meValue {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.meCta {
+  flex: none;
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--brown);
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: 10px;
+  background: var(--yellow);
+  box-shadow: 0 3px 0 var(--yellow-d);
+}

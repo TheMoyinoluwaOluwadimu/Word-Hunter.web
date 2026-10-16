@@ -1,5 +1,6 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthProvider';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { BackIcon, StarIcon, StopwatchIcon, StreakIcon, TrophyIcon } from '../components/icons';
 import Board from '../game/Board';
@@ -10,6 +11,7 @@ import { usePuzzle } from '../hooks/usePuzzle';
 import type { PuzzleState } from '../hooks/usePuzzle';
 import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
 import { useTimer } from '../hooks/useTimer';
+import { finishDailyRun, startDailyRun } from '../lib/dailyRun';
 import { formatTime } from '../lib/format';
 import { playSolvedSound } from '../lib/sound';
 import { hasSolvedToday, loadStats, timeUntilReset } from '../lib/storage';
@@ -40,6 +42,10 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
   const timer = useTimer();
   const { start, stop, reset } = timer;
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const userId = user?.id;
+  // the server starts its own clock on the first tile pick-up, once per visit
+  const dailyRunStarted = useRef(false);
 
   const exitPath = practice ? '/practice' : '/';
 
@@ -57,6 +63,13 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
     practice && file && archive.length > 0 ? archive[(archive.indexOf(file) + 1) % archive.length] : null;
   const hasNext = nextFile !== null && nextFile !== file;
 
+  const handleStart = useCallback(() => {
+    start();
+    if (practice || !userId || dailyRunStarted.current || hasSolvedToday(loadStats())) return;
+    dailyRunStarted.current = true;
+    void startDailyRun();
+  }, [start, practice, userId]);
+
   const handleSolved = useCallback(() => {
     const secs = stop();
     playSolvedSound();
@@ -65,9 +78,11 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
       setResult({ replay: false, newBest: rec?.newBest ?? false, best: rec?.best ?? null });
     } else {
       const { counted } = registerSolve();
+      // only the first solve of the day is ranked
+      if (counted && userId && secs !== null) void finishDailyRun(secs);
       setResult({ replay: !counted, newBest: false, best: null });
     }
-  }, [stop, practice, file, registerPracticeSolve, registerSolve]);
+  }, [stop, practice, file, registerPracticeSolve, registerSolve, userId]);
 
   function playAgain() {
     setResult(null);
@@ -193,7 +208,7 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
       )}
 
       {puzzleState.status === 'ready' && !showClosed && (
-        <Board key={boardKey} puzzle={puzzleState.puzzle} onStart={start} onSolved={handleSolved} />
+        <Board key={boardKey} puzzle={puzzleState.puzzle} onStart={handleStart} onSolved={handleSolved} />
       )}
 
       {result && (

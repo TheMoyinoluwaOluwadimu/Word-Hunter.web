@@ -26,12 +26,14 @@ interface AccountDialogProps {
 
 /** Guests see sign-in options; signed-in players see their account with sign-out and delete. */
 export default function AccountDialog({ open, onClose }: AccountDialogProps) {
-  const { user, displayName, signInWithGoogle, signInWithEmail, signOut, deleteAccount } = useAuth();
+  const { user, displayName, signInWithGoogle, signInWithEmail, signOut, updateUsername, deleteAccount } = useAuth();
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [nameDraft, setNameDraft] = useState('');
+  const [nameSaved, setNameSaved] = useState(false);
   // Deliberately not reset when the dialog reopens, so closing it can't dodge the cooldown.
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [now, setNow] = useState(() => Date.now());
@@ -58,12 +60,18 @@ export default function AccountDialog({ open, onClose }: AccountDialogProps) {
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
+  // The field starts on the current name (and follows it after a save).
+  useEffect(() => {
+    if (open) setNameDraft(displayName);
+  }, [open, displayName]);
+
   // Start clean each time the dialog is reopened.
   useEffect(() => {
     if (open) {
       setError(null);
       setSent(false);
       setConfirmDelete(false);
+      setNameSaved(false);
     }
   }, [open]);
 
@@ -91,6 +99,12 @@ export default function AccountDialog({ open, onClose }: AccountDialogProps) {
     }
   }
 
+  async function onNameSubmit(e: FormEvent) {
+    e.preventDefault();
+    setNameSaved(false);
+    if (await run(() => updateUsername(nameDraft))) setNameSaved(true);
+  }
+
   return (
     <div className={styles.backdrop} onClick={onClose}>
       <div
@@ -109,6 +123,31 @@ export default function AccountDialog({ open, onClose }: AccountDialogProps) {
             <>
               <p className={styles.name}>{displayName}</p>
               {user.email && <p className={styles.dim}>{user.email}</p>}
+              <form onSubmit={onNameSubmit} className={styles.form}>
+                <label htmlFor="display-name" className={styles.fieldLabel}>
+                  Display name <span className={styles.fieldHint}>· shown to players you challenge</span>
+                </label>
+                <input
+                  id="display-name"
+                  type="text"
+                  value={nameDraft}
+                  maxLength={24}
+                  autoComplete="nickname"
+                  onChange={(e) => {
+                    setNameDraft(e.target.value);
+                    setNameSaved(false);
+                  }}
+                  className={styles.input}
+                />
+                <button
+                  type="submit"
+                  className={styles.emailBtn}
+                  disabled={busy || nameDraft.trim() === displayName || nameDraft.trim().length < 2}
+                >
+                  Save name
+                </button>
+                {nameSaved && <p className={styles.ok}>Saved</p>}
+              </form>
               <p className={styles.dim}>Your streak and best times are saved to your account.</p>
               {confirmDelete && (
                 <p className={styles.warn}>This permanently deletes your account and all saved progress.</p>

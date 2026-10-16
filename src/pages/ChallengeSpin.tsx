@@ -234,6 +234,9 @@ export default function ChallengeSpin() {
                 <p className={styles.fine}>Your friend gets the exact same puzzle</p>
               </>
             )}
+            <Link to="/challenges" className={styles.linkBtn}>
+              My challenges
+            </Link>
           </div>
         </div>
       )}

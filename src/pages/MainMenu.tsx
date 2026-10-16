@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import AccountDialog from '../components/AccountDialog';
@@ -16,6 +16,7 @@ import { usePlayerStats } from '../hooks//usePlayerStats';
 import { usePuzzle } from '../hooks/usePuzzle';
 import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
 import { cx } from '../lib/cx';
+import { getLeaderboard } from '../lib/leaderboard';
 import { hasSolvedToday, timeUntilReset } from '../lib/storage';
 // @ts-ignore CSS modules are handled by the app bundler.
 import styles from './MainMenu.module.css';
@@ -28,6 +29,26 @@ export default function MainMenu() {
   const solvedToday = hasSolvedToday(stats, now);
   const { enabled, user, displayName } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
+  // Today's rank, once you've solved today's puzzle (null until then, or while signed out)
+  const [rank, setRank] = useState<number | null>(null);
+  const userId = user?.id;
+
+  useEffect(() => {
+    if (!userId || !solvedToday) {
+      setRank(null);
+      return;
+    }
+    let live = true;
+    getLeaderboard('today', 'global', 0).then(
+      (b) => live && setRank(b.me?.rank ?? null),
+      () => {
+        // the card just keeps its placeholder
+      },
+    );
+    return () => {
+      live = false;
+    };
+  }, [userId, solvedToday]);
 
   const themeText =
     puzzleState.status === 'ready' ? (puzzleState.puzzle.theme ?? 'Daily Puzzle') : puzzleState.status === 'error' ? 'Daily Puzzle' : 'Loading';
@@ -123,17 +144,17 @@ export default function MainMenu() {
         </div>
 
         {/* rankings */}
-        <div className={cx(styles.card, styles.wide)} tabIndex={0}>
+        <Link to="/leaderboard" className={`${styles.card} ${styles.wide}`}>
           <span className={styles.cardIcon}>
             <TrophyIcon size={46} />
           </span>
           <div className={styles.wideText}>
             <p className={styles.label}>Rankings</p>
             <h3 className={styles.cardTitle}>Leaderboard</h3>
-            <p className={styles.cardSub}>Global standing this week</p>
+            <p className={styles.cardSub}>{rank !== null ? "Today's fastest times" : "Solve today's puzzle to get ranked"}</p>
           </div>
-          <span className={styles.rankNumber}>#—</span>
-        </div>
+          <span className={styles.rankNumber}>{rank !== null ? `#${rank}` : '#—'}</span>
+        </Link>
       </div>
 
       <AccountDialog open={accountOpen} onClose={() => setAccountOpen(false)} />
@@ -152,7 +173,7 @@ export default function MainMenu() {
           <div className={styles.statLabel}>Solved</div>
         </div>
         <div className={styles.stat}>
-          <div className={styles.statValue}>#—</div>
+          <div className={styles.statValue}>{rank !== null ? `#${rank}` : '#—'}</div>
           <div className={styles.statLabel}>Rank</div>
         </div>
       </footer>
