@@ -304,7 +304,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* the spin reel */
+/* the spin reel: a tall strip of theme blocks that scrolls behind a three-row window */
 .reel {
   background: var(--wood);
   border-radius: 20px;
@@ -314,75 +314,125 @@
 
 .reelWindow {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   padding: 12px 34px;
-  overflow: hidden;
   background: rgba(0, 0, 0, 0.32);
   border-radius: 14px;
   box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.5);
 }
 
-.reelRow {
-  height: 58px;
+/* three rows tall: 70 + 10 + 70 + 10 + 70 */
+.viewport {
+  position: relative;
+  height: 230px;
+  overflow: hidden;
   border-radius: 12px;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  text-align: center;
-  font-family: var(--font-display);
-  font-size: 25px;
-  letter-spacing: 1px;
+}
+
+.strip {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  will-change: transform;
+}
+
+/* a long, smooth slow-down: fast at first, then easing onto the target */
+.stripSpin {
+  transition: transform 3.6s cubic-bezier(0.1, 0.75, 0.15, 1);
+}
+
+.reelItem {
+  flex: none;
+  height: 70px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 0 8px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-
-.reelDim {
-  opacity: 0.4;
-}
-
-.reelMain {
-  height: 84px;
-  border-radius: 14px;
-  box-shadow: 0 6px 0 var(--edge, var(--wood-d)), inset 0 3px 0 rgba(255, 255, 255, 0.4);
-  outline: 4px solid var(--yellow);
-  outline-offset: 3px;
-}
-
-.reelQ {
-  background: var(--cream);
-  color: var(--brown);
-  --edge: var(--wood-d);
+  font-family: var(--font-display);
+  box-shadow: 0 5px 0 var(--edge), inset 0 3px 0 rgba(255, 255, 255, 0.35);
 }
 
 .reelName {
-  font-size: 44px;
-  line-height: 1;
-  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
+  font-size: 27px;
+  line-height: 1.05;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
 }
 
 .reelSub {
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 0;
-}
-
-.reelBlur {
-  font-size: 34px;
-  filter: blur(1.2px);
   opacity: 0.85;
 }
 
-.reelLanded {
-  animation: land 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+/* the top and bottom rows fade back so the middle one reads as "the pick" */
+.shadeTop,
+.shadeBottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 80px;
+  pointer-events: none;
+}
+
+.shadeTop {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(14, 44, 36, 0.88), rgba(14, 44, 36, 0.6));
+}
+
+.shadeBottom {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(14, 44, 36, 0.88), rgba(14, 44, 36, 0.6));
+}
+
+/* shown before the first spin, so the answer isn't given away */
+.mystery {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 80px;
+  height: 70px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--cream);
+  color: var(--brown);
+  font-family: var(--font-display);
+  font-size: 48px;
+  box-shadow: 0 5px 0 var(--wood-d), inset 0 3px 0 rgba(255, 255, 255, 0.6);
+  transition: opacity 0.25s ease;
+}
+
+.mysteryGone {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* the yellow pick frame around the middle row */
+.frame {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 78px;
+  height: 74px;
+  box-sizing: border-box;
+  border: 4px solid var(--yellow);
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+.frameLanded {
+  animation: land 0.5s cubic-bezier(0.3, 1.7, 0.5, 1);
 }
 
 @keyframes land {
   from {
-    transform: scale(0.88);
+    transform: scale(1.07);
   }
   to {
     transform: none;

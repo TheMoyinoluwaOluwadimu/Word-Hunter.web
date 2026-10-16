@@ -20,6 +20,15 @@ type Phase = 'idle' | 'spinning' | 'landed';
 
 const COLOR_CLASSES = ['c0', 'c1', 'c2', 'c3', 'c4'] as const;
 
+// Reel geometry. Must match .reelItem / .strip in Challenge.module.css.
+const ROW_HEIGHT = 70;
+const ROW_GAP = 10;
+const PITCH = ROW_HEIGHT + ROW_GAP;
+/** The themes are repeated this many times so the strip is always long enough to scroll through. */
+const REPS = 15;
+/** Matches the transition on .stripSpin. */
+const SPIN_MS = 5000;
+
 /** /challenge: spin a theme from the challenge pool, then play it to set the time to beat. */
 export default function ChallengeSpin() {
   const { enabled, user } = useAuth();
@@ -27,10 +36,14 @@ export default function ChallengeSpin() {
   const [themes, setThemes] = useState<Theme[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>('idle');
-  const [pos, setPos] = useState(0);
+  // Which row of the long strip sits in the centre slot. It always rests in the second copy of
+  // the list, so there are rows above and below to show. Spinning moves it forward a few laps.
+  const [idx, setIdx] = useState(0);
+  const [animate, setAnimate] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const spinning = useRef(false);
   const timer = useRef<number | undefined>(undefined);
 
   // Read each pool puzzle once, only for its theme name and word count.
@@ -53,6 +66,7 @@ export default function ChallengeSpin() {
         const ok = list.filter((t): t is Theme => t !== null);
         if (ok.length === 0) throw new Error('No challenge puzzles could be loaded.');
         setThemes(ok);
+        setIdx(ok.length);
       } catch (e) {
         if (!ctrl.signal.aborted) setLoadError(e instanceof Error ? e.message : String(e));
       }
@@ -62,34 +76,44 @@ export default function ChallengeSpin() {
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
+  const n = themes?.length ?? 0;
+  const pos = n > 0 ? idx % n : 0;
+
+  // The reel has stopped on its target. Jump (no animation) to the same theme in the middle copy
+  // of the strip, which looks identical but leaves room to spin again.
+  const land = useCallback(() => {
+    if (!spinning.current || n === 0) return;
+    spinning.current = false;
+    window.clearTimeout(timer.current);
+    setAnimate(false);
+    setIdx((i) => (i % n) + n);
+    setPhase('landed');
+  }, [n]);
+
   const spin = useCallback(() => {
-    if (!themes || phase === 'spinning') return;
-    const n = themes.length;
+    if (!themes || spinning.current) return;
     const target = Math.floor(Math.random() * n);
     setError(null);
 
-    // Nothing to shuffle through, or the player asked for less motion: land straight away.
+    // Nothing to scroll through, or the player asked for less motion: land straight away.
     if (n === 1 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setPos(target);
+      setAnimate(false);
+      setIdx(n + target);
       setPhase('landed');
       return;
     }
 
+    // three or four full laps, then the distance to the target theme
+    const delta = (target - (idx % n) + n) % n;
+    const end = idx + (5 + Math.floor(Math.random() * 4)) * n + delta;
+    spinning.current = true;
+    setAnimate(true);
+    setIdx(end);
     setPhase('spinning');
-    // two or three full laps, ending exactly on the target; the reel slows as it goes
-    const steps = (2 + Math.floor(Math.random() * 2)) * n + ((target - pos + n) % n);
-    let i = 0;
-    const tick = () => {
-      i++;
-      setPos((p) => (p + 1) % n);
-      if (i >= steps) {
-        setPhase('landed');
-        return;
-      }
-      timer.current = window.setTimeout(tick, 55 + Math.pow(i / steps, 3) * 280);
-    };
-    timer.current = window.setTimeout(tick, 55);
-  }, [themes, phase, pos]);
+    // transitionend is the normal trigger; this covers the cases where it never fires
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(land, SPIN_MS + 200);
+  }, [themes, n, idx, land]);
 
   async function play() {
     if (!themes) return;
@@ -108,10 +132,6 @@ export default function ChallengeSpin() {
     }
   }
 
-  const n = themes?.length ?? 0;
-  const at = (i: number) => (themes ? themes[((i % n) + n) % n] : undefined);
-  const classOf = (i: number) => styles[COLOR_CLASSES[((i % 5) + 5) % 5]];
-  const current = at(pos);
   const landed = phase === 'landed';
 
   return (
@@ -159,32 +179,35 @@ export default function ChallengeSpin() {
             </p>
           </div>
 
-          <div className={styles.reel} aria-live="polite">
+          <div className={styles.reel} role="img" aria-label={landed && themes ? `Your theme: ${themes[pos].theme}` : 'Theme reel'}>
             <div className={styles.reelWindow}>
-              <div className={cx(styles.reelRow, styles.reelDim, themes && classOf(pos - 1))}>
-                {at(pos - 1)?.theme ?? ''}
-              </div>
-              <div
-                className={cx(
-                  styles.reelRow,
-                  styles.reelMain,
-                  landed && current ? classOf(pos) : styles.reelQ,
-                  landed && styles.reelLanded,
+              <div className={styles.viewport}>
+                {themes && (
+                  <div
+                    className={cx(styles.strip, animate && styles.stripSpin)}
+                    // the centre slot is the second visible row, so show the row above it first
+                    style={{ transform: `translateY(${-(idx - 1) * PITCH}px)` }}
+                    onTransitionEnd={(e) => {
+                      if (e.target === e.currentTarget && e.propertyName === 'transform') land();
+                    }}
+                  >
+                    {Array.from({ length: n * REPS }, (_, i) => {
+                      const t = themes[i % n];
+                      return (
+                        <div key={i} className={cx(styles.reelItem, styles[COLOR_CLASSES[(i % n) % 5]])}>
+                          <span className={styles.reelName}>{t.theme}</span>
+                          <span className={styles.reelSub}>{t.words} words</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 )}
-              >
-                {landed && current ? (
-                  <>
-                    <span className={styles.reelName}>{current.theme}</span>
-                    <span className={styles.reelSub}>{current.words} words</span>
-                  </>
-                ) : phase === 'spinning' && current ? (
-                  <span className={styles.reelBlur}>{current.theme}</span>
-                ) : (
-                  <span className={styles.reelName}>?</span>
-                )}
-              </div>
-              <div className={cx(styles.reelRow, styles.reelDim, themes && classOf(pos + 1))}>
-                {at(pos + 1)?.theme ?? ''}
+                <div className={styles.shadeTop} aria-hidden="true" />
+                <div className={styles.shadeBottom} aria-hidden="true" />
+                <div className={cx(styles.mystery, phase !== 'idle' && styles.mysteryGone)} aria-hidden="true">
+                  ?
+                </div>
+                <div className={cx(styles.frame, landed && styles.frameLanded)} aria-hidden="true" />
               </div>
               <span className={styles.arrowL} aria-hidden="true" />
               <span className={styles.arrowR} aria-hidden="true" />
