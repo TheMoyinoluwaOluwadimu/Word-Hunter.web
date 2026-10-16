@@ -1,0 +1,12 @@
+{
+  "theme": "Coffee",
+  "generated_at": "2026-08-25T08:45:12.752Z",
+  "source": "datamuse (md=d definitions, auto-suggested chunks, human-reviewed)",
+  "puzzle": [
+    {"clue": "Programming Language","answer": "java","chunks": ["ja","va"]},
+    {"clue": "A drink of coffee made from espresso","answer": "latte", "chunks": ["la","tte"]},
+    {"clue": "A concentrated coffee beverage brewed by forcing","answer": "espresso","chunks": ["e","spre","sso"]},
+    {"clue": "An alkaloid","answer": "caffeine","chunks": ["ca","ffei", "ne"]},
+    {"clue": "An establishment where coffee is served to","answer": "coffeehouse","chunks": ["co","ffee","hou","se"]}  
+  ]
+}

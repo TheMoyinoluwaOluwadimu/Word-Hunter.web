@@ -21,6 +21,15 @@ export function useTimer() {
     setStatus('running');
   }, []);
 
+  /** Starts already `offsetSeconds` in (a challenge resumed after a reload keeps its original clock). */
+  const startFrom = useCallback((offsetSeconds: number) => {
+    if (startRef.current !== null) return;
+    const offset = Math.max(0, Math.floor(offsetSeconds));
+    startRef.current = Date.now() - offset * 1000;
+    setElapsed(offset);
+    setStatus('running');
+  }, []);
+
   /** Stops the clock and returns the final time in seconds (null if it never started). */
   const stop = useCallback((): number | null => {
     if (startRef.current === null) return null;
@@ -36,5 +45,5 @@ export function useTimer() {
     setStatus('idle');
   }, []);
 
-  return { status, elapsed, start, stop, reset };
+  return { status, elapsed, start, startFrom, stop, reset };
 }

@@ -9,16 +9,6 @@
   gap: 14px;
 }
 
-/* stitched edge of the felt mat */
-.stage::after {
-  content: '';
-  position: absolute;
-  inset: 8px;
-  border: 2px dashed rgba(255, 244, 220, 0.32);
-  border-radius: 27px;
-  pointer-events: none;
-}
-
 /* header: wooden sign */
 .header {
   display: flex;
@@ -183,7 +173,7 @@
   justify-content: center;
   background: rgba(0, 0, 0, 0.28);
   box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.4);
-  border: 2px dashed rgba(255, 244, 220, 0.22);
+  border: 2px solid rgba(255, 244, 220, 0.1);
   transition: background 0.15s, border-color 0.15s;
 }
 
@@ -464,8 +454,6 @@
   color: var(--brown);
   border-radius: 14px;
   box-shadow: 0 5px 0 var(--wood-d), 0 9px 10px rgba(0, 0, 0, 0.22);
-  outline: 2px dashed var(--paper-edge);
-  outline-offset: -6px;
 }
 
 .noticeEyebrow {
@@ -528,4 +516,22 @@
   margin: 0;
   font-size: 13px;
   color: var(--cream-dim);
+}
+
+/* Challenge screens: a little more air between the sections */
+.roomy .header {
+  margin-top: 24px;
+}
+.roomy .metaRow {
+  margin-top: 10px;
+}
+.roomy .themeBanner {
+  padding-top: 16px;
+}
+.roomy .words {
+  margin-top: 20px;
+  gap: 16px;
+}
+.roomy .poolSection {
+  margin-top: 34px;
 }

@@ -24,7 +24,8 @@ export type BoardAction =
   | { type: 'CHECK' }
   | { type: 'RETRY' };
 
-export function createBoard(puzzle: Puzzle): BoardState {
+/** `seed` makes the tile order repeatable (challenges); without it every board is freshly shuffled. */
+export function createBoard(puzzle: Puzzle, seed?: number): BoardState {
   const tiles: TileModel[] = [];
   const expected: Record<string, string> = {};
   puzzle.items.forEach((item, wordIdx) => {
@@ -34,7 +35,7 @@ export function createBoard(puzzle: Puzzle): BoardState {
     });
   });
   return {
-    tiles: shuffle(tiles),
+    tiles: shuffle(tiles, seed),
     expected,
     totalSlots: tiles.length,
     placements: {},

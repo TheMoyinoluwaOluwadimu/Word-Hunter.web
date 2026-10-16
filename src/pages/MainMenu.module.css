@@ -9,16 +9,6 @@
   gap: 16px;
 }
 
-/* stitched edge of the felt mat */
-.stage::after {
-  content: '';
-  position: absolute;
-  inset: 8px;
-  border: 2px dashed rgba(255, 244, 220, 0.32);
-  border-radius: 27px;
-  pointer-events: none;
-}
-
 .header {
   display: flex;
   flex-direction: column;
@@ -146,8 +136,6 @@
   border-radius: 16px;
   padding: 18px 18px 16px;
   box-shadow: 0 6px 0 var(--red-d), 0 12px 14px rgba(0, 0, 0, 0.28);
-  outline: 2px dashed rgba(255, 244, 220, 0.55);
-  outline-offset: -8px;
   transform: rotate(-1deg);
   transition: transform 0.15s ease;
 }
@@ -242,8 +230,6 @@
   cursor: pointer;
   text-decoration: none;
   box-shadow: 0 5px 0 var(--wood-d), 0 9px 10px rgba(0, 0, 0, 0.22);
-  outline: 2px dashed var(--paper-edge);
-  outline-offset: -6px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 

@@ -16,16 +16,6 @@
   transition: opacity 450ms ease;
 }
 
-/* stitched edge of the felt mat */
-.splash::after {
-  content: '';
-  position: absolute;
-  inset: 8px;
-  border: 2px dashed rgba(255, 244, 220, 0.32);
-  border-radius: 27px;
-  pointer-events: none;
-}
-
 .leaving {
   opacity: 0;
   pointer-events: none;

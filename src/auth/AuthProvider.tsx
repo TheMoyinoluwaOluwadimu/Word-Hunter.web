@@ -25,6 +25,22 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 // hash, carry the result (PKCE), so HashRouter routes are untouched.
 const redirectTo = () => window.location.origin + window.location.pathname;
 
+export const RETURN_KEY = 'wordchunk_return_to';
+
+/**
+ * Sign-in leaves the app (Google / an emailed link) and comes back to the start page, which would
+ * lose a challenge link the player opened. Remember where they were; App sends them back.
+ */
+function rememberReturn() {
+  try {
+    const hash = window.location.hash;
+    if (/^#\/(c\/|challenge)/.test(hash)) localStorage.setItem(RETURN_KEY, hash);
+    else localStorage.removeItem(RETURN_KEY);
+  } catch {
+    // storage unavailable: they land on the menu instead
+  }
+}
+
 function nameOf(user: User | null): string {
   if (!user) return 'Guest';
   const meta = user.user_metadata ?? {};
@@ -56,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = useCallback(async () => {
     if (!supabase) return 'Sign-in is not configured.';
+    rememberReturn();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: redirectTo() },
@@ -65,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithEmail = useCallback(async (email: string) => {
     if (!supabase) return 'Sign-in is not configured.';
+    rememberReturn();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: redirectTo() },

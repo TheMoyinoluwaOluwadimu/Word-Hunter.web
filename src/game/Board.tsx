@@ -11,6 +11,8 @@ interface BoardProps {
   onStart: () => void;
   /** Fired once when the board is completely correct. */
   onSolved: () => void;
+  /** Challenges pass the shared seed so every player gets the identical tile order. */
+  seed?: number;
 }
 
 interface DragState {
@@ -32,8 +34,8 @@ function blockColor(chunk: string): number {
   return sum % BLOCK_COLORS;
 }
 
-export default function Board({ puzzle, onStart, onSolved }: BoardProps) {
-  const [board, dispatch] = useReducer(boardReducer, puzzle, createBoard);
+export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
+  const [board, dispatch] = useReducer(boardReducer, undefined, () => createBoard(puzzle, seed));
   const [drag, setDrag] = useState<DragState | null>(null);
 
   const onSolvedRef = useRef(onSolved);

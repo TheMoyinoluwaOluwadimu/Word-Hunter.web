@@ -9,16 +9,6 @@
   gap: 16px;
 }
 
-/* stitched edge of the felt mat */
-.stage::after {
-  content: '';
-  position: absolute;
-  inset: 8px;
-  border: 2px dashed rgba(255, 244, 220, 0.32);
-  border-radius: 27px;
-  pointer-events: none;
-}
-
 /* wooden sign */
 .sign {
   display: flex;
@@ -110,8 +100,6 @@
   border-radius: 14px;
   padding: 14px;
   box-shadow: 0 5px 0 var(--wood-d), 0 9px 10px rgba(0, 0, 0, 0.22);
-  outline: 2px dashed var(--paper-edge);
-  outline-offset: -6px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 

@@ -104,14 +104,14 @@ export default function MainMenu() {
 
         {/* secondary pair */}
         <div className={styles.duo}>
-          <div className={styles.card} tabIndex={0}>
+          <Link to="/challenge" className={styles.card}>
             <span className={styles.cardIcon}>
               <ChallengeIcon />
             </span>
             <p className={styles.label}>Versus</p>
             <h3 className={styles.cardTitle}>Challenge</h3>
             <p className={styles.cardSub}>Spin a theme, race a friend.</p>
-          </div>
+          </Link>
           <Link to="/practice" className={styles.card}>
             <span className={styles.cardIcon}>
               <ArchiveIcon />

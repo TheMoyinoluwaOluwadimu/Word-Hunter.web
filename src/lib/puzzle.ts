@@ -32,15 +32,20 @@ export function parsePuzzle(data: unknown, source: string): Puzzle {
   return { theme: typeof root.theme === 'string' ? root.theme : null, items };
 }
 
-export async function fetchPuzzle(file: string, signal?: AbortSignal): Promise<Puzzle> {
-  const url = `${import.meta.env.BASE_URL}puzzles/${file}`;
+/** `folder` is 'puzzles' (daily + archive) or 'challenges' (the Challenge pool), both under public/. */
+export async function fetchPuzzle(
+  file: string,
+  signal?: AbortSignal,
+  folder: 'puzzles' | 'challenges' = 'puzzles',
+): Promise<Puzzle> {
+  const url = `${import.meta.env.BASE_URL}${folder}/${file}`;
   const res = await fetch(url, { signal });
   if (!res.ok) throw new PuzzleError(`Could not load ${file} (HTTP ${res.status}).`);
   let data: unknown;
   try {
     data = await res.json();
   } catch {
-    throw new PuzzleError(`${file} is missing or is not valid JSON. It should live in public/puzzles/.`);
+    throw new PuzzleError(`${file} is missing or is not valid JSON. It should live in public/${folder}/.`);
   }
   return parsePuzzle(data, file);
 }
