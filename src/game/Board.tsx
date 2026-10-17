@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
 import { cx } from '../lib/cx';
 import { buzzPlace, buzzReturn, buzzWrong } from '../lib/haptics';
 import { playPickupSound, playPlaceSound, playReturnSound } from '../lib/sound';
@@ -27,6 +27,10 @@ interface DragState {
 
 const TAP_DISTANCE = 6; // movement under this (px) counts as a tap
 const BLOCK_COLORS = 5;
+const SNAP_DISTANCE = 30; // a drop this close (px) to a slot still lands in it
+const EDGE = 110; // holding a tile within this many px of a screen edge scrolls the page
+const MAX_SCROLL_SPEED = 18; // px per frame at the very edge
+const MIN_FIT = 0.68; // the board never shrinks below this fraction of full size
 
 /** Picks one of the block paint colours from the chunk text, so a chunk always looks the same. */
 function blockColor(chunk: string): number {
@@ -38,6 +42,10 @@ function blockColor(chunk: string): number {
 export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
   const [board, dispatch] = useReducer(boardReducer, undefined, () => createBoard(puzzle, seed));
   const [drag, setDrag] = useState<DragState | null>(null);
+  // A tile picked by tapping (instead of dragging): the next tap on a slot places it.
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  // The tray and progress bar, pinned to the bottom of the screen. Auto-scroll stays clear of it.
+  const dockRef = useRef<HTMLDivElement>(null);
 
   const onSolvedRef = useRef(onSolved);
   useEffect(() => {
@@ -50,6 +58,55 @@ export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
   // A tile being dragged out of a slot has already left it, as far as counting goes.
   const liftedFromSlot = drag !== null && placedIds.has(drag.tileId);
   const placedCount = Object.keys(board.placements).length - (liftedFromSlot ? 1 : 0);
+
+  // A selection ends when the tile gets placed some other way, or the board stops accepting moves.
+  useEffect(() => {
+    if (selectedId && (board.phase !== 'playing' || Object.values(board.placements).includes(selectedId))) {
+      setSelectedId(null);
+    }
+  }, [selectedId, board.phase, board.placements]);
+
+  // Shrink the board just enough to fit the screen: no scrolling, nothing pinned. It tries full size
+  // first, then smaller in small steps. If even the smallest size doesn't fit (a very short screen)
+  // it stays there and the tray pins to the bottom instead (see .dock in the CSS).
+  useLayoutEffect(() => {
+    const dock = dockRef.current;
+    const stage = dock?.parentElement;
+    if (!dock || !stage) return;
+    const root = document.documentElement;
+
+    const fit = () => {
+      const minHeight = stage.style.minHeight;
+      stage.style.minHeight = '0px'; // measure the content itself, not the screen-high page
+      dock.dataset.scroll = 'no';
+      let fits = false;
+      for (let scale = 1; scale >= MIN_FIT - 0.001; scale -= 0.04) {
+        root.style.setProperty('--fit', scale.toFixed(2));
+        if (stage.getBoundingClientRect().height <= window.innerHeight) {
+          fits = true;
+          break;
+        }
+      }
+      if (!fits) root.style.setProperty('--fit', String(MIN_FIT));
+      stage.style.minHeight = minHeight;
+      dock.dataset.scroll = fits ? 'no' : 'yes';
+    };
+
+    fit();
+    let frame = 0;
+    const refit = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(fit);
+    };
+    window.addEventListener('resize', refit);
+    // the display font arrives late and changes how the text wraps
+    void document.fonts?.ready.then(refit);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('resize', refit);
+      root.style.removeProperty('--fit');
+    };
+  }, [puzzle]);
 
   // Whole board filled -> check it (after a beat, so the last drop registers visually).
   useEffect(() => {
@@ -92,8 +149,45 @@ export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
     playPickupSound();
     setDrag({ tileId: tile.id, x: rect.left, y: rect.top, width: rect.width, height: rect.height, hoverSlot: null });
 
-    const slotAt = (x: number, y: number) =>
-      document.elementFromPoint(x, y)?.closest<HTMLElement>('[data-slot-key]')?.dataset.slotKey ?? null;
+    // The slot under the finger. If the finger lands just beside one, snap to the nearest within
+    // thumb reach, so a drop doesn't have to be pixel perfect.
+    const slotAt = (x: number, y: number): string | null => {
+      const hit = document.elementFromPoint(x, y)?.closest<HTMLElement>('[data-slot-key]');
+      if (hit) return hit.dataset.slotKey ?? null;
+      let best: string | null = null;
+      let bestDistance = SNAP_DISTANCE;
+      for (const slot of Array.from(document.querySelectorAll<HTMLElement>('[data-slot-key]'))) {
+        const r = slot.getBoundingClientRect();
+        const d = Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom));
+        if (d < bestDistance) {
+          bestDistance = d;
+          best = slot.dataset.slotKey ?? null;
+        }
+      }
+      return best;
+    };
+
+    // Hold a tile near the top of the screen, or just above the tray, and the page scrolls that way.
+    // The harder you push toward the edge, the faster it goes.
+    let frame = 0;
+    const autoScroll = () => {
+      if (Math.hypot(lastX - startX, lastY - startY) >= TAP_DISTANCE) {
+        const dockTop = dockRef.current?.getBoundingClientRect().top ?? window.innerHeight;
+        let dy = 0;
+        if (lastY < EDGE) dy = -Math.ceil(((EDGE - lastY) / EDGE) * MAX_SCROLL_SPEED);
+        else if (lastY < dockTop && lastY > dockTop - EDGE) {
+          dy = Math.ceil(((lastY - (dockTop - EDGE)) / EDGE) * MAX_SCROLL_SPEED);
+        }
+        if (dy !== 0) {
+          window.scrollBy(0, dy);
+          // the page moved under the finger, so the slot under it may have changed
+          const hover = slotAt(lastX, lastY);
+          setDrag((d) => (d && d.hoverSlot !== hover ? { ...d, hoverSlot: hover } : d));
+        }
+      }
+      frame = requestAnimationFrame(autoScroll);
+    };
+    frame = requestAnimationFrame(autoScroll);
 
     const onMove = (ev: PointerEvent) => {
       if (ev.pointerId !== pointerId) return;
@@ -108,11 +202,33 @@ export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onCancel);
+      cancelAnimationFrame(frame);
 
       const isTap = Math.hypot(lastX - startX, lastY - startY) < TAP_DISTANCE;
       const slot = cancelled || isTap ? null : slotAt(ev.clientX, ev.clientY);
       setDrag(null);
 
+      if (isTap && !cancelled) {
+        const ownSlot = wasPlaced ? Object.keys(board.placements).find((k) => board.placements[k] === tile.id) : undefined;
+        if (selectedId && selectedId !== tile.id && ownSlot) {
+          // a tile is selected and a placed one is tapped: swap them
+          dispatch({ type: 'DROP', tileId: selectedId, slot: ownSlot });
+          setSelectedId(null);
+          playPlaceSound();
+          buzzPlace();
+        } else if (!wasPlaced) {
+          // tapping a tile in the tray selects it (tap it again to let go)
+          setSelectedId(selectedId === tile.id ? null : tile.id);
+        } else {
+          // tapping a placed tile sends it back to the tray
+          dispatch({ type: 'RETURN', tileId: tile.id });
+          playReturnSound();
+          buzzReturn();
+        }
+        return;
+      }
+
+      setSelectedId(null);
       if (slot) {
         const occupant = board.placements[slot];
         const blocked = occupant !== undefined && board.locked.includes(occupant);
@@ -125,7 +241,7 @@ export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
           buzzPlace();
         }
       } else {
-        // a tap, or a drop on empty space, sends the tile back to the pool
+        // dropped on empty space: back to the tray
         dispatch({ type: 'RETURN', tileId: tile.id });
         if (wasPlaced) {
           playReturnSound();
@@ -141,6 +257,20 @@ export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
     window.addEventListener('pointercancel', onCancel);
   }
 
+  function placeSelected(slot: string) {
+    if (!selectedId || board.phase !== 'playing') return;
+    const occupant = board.placements[slot];
+    if (occupant !== undefined && board.locked.includes(occupant)) {
+      playReturnSound();
+      buzzReturn();
+      return;
+    }
+    dispatch({ type: 'DROP', tileId: selectedId, slot });
+    setSelectedId(null);
+    playPlaceSound();
+    buzzPlace();
+  }
+
   // The dragged tile keeps the same DOM node for the whole drag (it just goes position:fixed),
   // so the browser never loses track of the pointer mid-gesture.
   function renderTile(tile: TileModel) {
@@ -153,6 +283,7 @@ export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
         className={cx(
           styles.tile,
           isDragging && styles.dragging,
+          selectedId === tile.id && !isDragging && styles.selected,
           board.locked.includes(tile.id) && styles.locked,
           board.wrong.includes(tile.id) && styles.wrongShake,
         )}
@@ -166,12 +297,16 @@ export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
 
   const poolTiles = board.tiles.filter((t) => !placedIds.has(t.id));
 
+  const selectedChunk = selectedId ? tileById.get(selectedId)?.chunk : undefined;
+
   const status =
     board.phase === 'checking' || board.phase === 'revealing'
       ? 'Checking...'
       : board.phase === 'solved'
         ? 'Puzzle solved'
-        : (board.message ??
+        : selectedChunk
+          ? `Now tap a slot for "${selectedChunk}"`
+          : (board.message ??
           (placedCount === 0
             ? 'Fill every slot, then it checks itself'
             : `${placedCount} of ${board.totalSlots} tiles placed`));
@@ -193,7 +328,17 @@ export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
                     <div
                       key={key}
                       data-slot-key={key}
-                      className={cx(styles.slot, filled && styles.filled, drag?.hoverSlot === key && styles.hoverTarget)}
+                      className={cx(
+                        styles.slot,
+                        filled && styles.filled,
+                        drag?.hoverSlot === key && styles.hoverTarget,
+                        selectedId && !filled && styles.target,
+                      )}
+                      onClick={(e) => {
+                        // a tap on a tile inside the slot is the tile's own business
+                        if ((e.target as HTMLElement).closest('[data-tile-id]')) return;
+                        placeSelected(key);
+                      }}
                     >
                       {tile && renderTile(tile)}
                     </div>
@@ -205,25 +350,27 @@ export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
         ))}
       </div>
 
-      <div className={styles.poolSection}>
-        <div className={styles.pool} data-testid="pool">
-          {poolTiles.flatMap((tile) =>
-            drag?.tileId === tile.id
-              ? [
-                  <div key={`ph-${tile.id}`} style={{ width: drag.width, height: drag.height, flexShrink: 0 }} />,
-                  renderTile(tile),
-                ]
-              : [renderTile(tile)],
-          )}
+      <div className={styles.dock} ref={dockRef}>
+        <div className={styles.poolSection}>
+          <div className={styles.pool} data-testid="pool">
+            {poolTiles.flatMap((tile) =>
+              drag?.tileId === tile.id
+                ? [
+                    <div key={`ph-${tile.id}`} style={{ width: drag.width, height: drag.height, flexShrink: 0 }} />,
+                    renderTile(tile),
+                  ]
+                : [renderTile(tile)],
+            )}
+          </div>
         </div>
-      </div>
 
-      <div className={styles.footerBar}>
-        <div className={styles.progressTrack}>
-          <div className={styles.progressFill} style={{ width: `${(placedCount / board.totalSlots) * 100}%` }} />
-        </div>
-        <div className={styles.statusLine} data-testid="status">
-          {status}
+        <div className={styles.footerBar}>
+          <div className={styles.progressTrack}>
+            <div className={styles.progressFill} style={{ width: `${(placedCount / board.totalSlots) * 100}%` }} />
+          </div>
+          <div className={styles.statusLine} data-testid="status">
+            {status}
+          </div>
         </div>
       </div>
     </>

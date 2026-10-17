@@ -5,8 +5,8 @@
 -- start_daily / finish_daily. The server stamps the start, so a time (or a streak, or a
 -- solve count) can't be made up from the browser.
 --
--- Counting starts from the day this is installed: earlier solves live only in the player's
--- own stats and are not ranked.
+-- Counting starts from the day this is installed. Solves made before that live only in each
+-- player's own stats; run backfill.sql once to credit them.
 --
 -- Known limit: the puzzle files are public, so someone who writes a script can still
 -- "solve" in about the time it takes to wait. The 5-second floor and the server clock stop
@@ -35,6 +35,16 @@ drop policy if exists "own daily runs" on public.daily_runs;
 create policy "own daily runs" on public.daily_runs
   for select using (auth.uid() = user_id);
 -- No insert/update/delete policies: direct writes are refused.
+
+-- Solves made before the server timed runs, credited once by backfill.sql. They count on the
+-- All time tab only (there is no time or day to attach to them).
+create table if not exists public.leaderboard_credit (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  solves integer not null default 0 check (solves >= 0)
+);
+
+alter table public.leaderboard_credit enable row level security;
+-- No policies: only the leaderboard function below (security definer) reads it.
 
 -- Start (or resume) today's run. Call when the first tile is picked up.
 create or replace function public.start_daily()
@@ -152,12 +162,20 @@ begin
     base as (
       select r.user_id, r.seconds::numeric as value
         from daily_runs r
-       where p_tab = 'today' and r.puzzle_date = v_today and r.finished_at is not null
+       where p_tab = 'today' and r.puzzle_date = v_today and r.finished_at is not null and r.seconds is not null
       union all
-      select r.user_id, count(*)::numeric
-        from daily_runs r
-       where p_tab = 'alltime' and r.finished_at is not null
-       group by r.user_id
+      select u.user_id, sum(u.n)::numeric
+        from (
+          select r.user_id, count(*) as n
+            from daily_runs r
+           where p_tab = 'alltime' and r.finished_at is not null
+           group by r.user_id
+          union all
+          select c.user_id, c.solves::bigint
+            from leaderboard_credit c
+           where p_tab = 'alltime'
+        ) u
+       group by u.user_id
       union all
       select s.user_id, s.n::numeric
         from (

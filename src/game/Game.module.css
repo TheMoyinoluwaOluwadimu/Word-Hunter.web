@@ -648,3 +648,144 @@
 .overlayActions {
   animation: rise 0.5s ease-out 1s both;
 }
+
+/* ---- easier moving ---- */
+
+/* The tray and progress bar stay pinned to the bottom of the screen while the clues scroll behind
+   them, so the chunks are always in reach. A long tray scrolls inside itself. */
+.dock {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+/* Only when the board can't fit the screen even at its smallest size (data-scroll is set by Board). */
+.dock[data-scroll='yes'] {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  padding-top: 14px;
+  background: linear-gradient(to top, rgba(31, 107, 87, 0.98) 82%, rgba(31, 107, 87, 0));
+}
+
+.dock .poolSection,
+.roomy .dock .poolSection {
+  margin-top: 0;
+}
+
+.dock .pool {
+  min-height: 0;
+  padding: calc(11px * var(--fit, 1)) 12px calc(10px * var(--fit, 1));
+}
+
+.dock[data-scroll='yes'] .pool {
+  max-height: 30vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+.dock .footerBar {
+  position: static;
+  background: none;
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px));
+}
+
+.roomy .words {
+  margin-bottom: 14px;
+}
+
+/* a tile picked by tapping lifts and glows, and the empty slots invite the next tap */
+.tile.selected {
+  transform: translateY(-6px) scale(1.06);
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+  box-shadow: 0 10px 14px rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+}
+
+@keyframes targetPulse {
+  0%,
+  100% {
+    background: rgba(245, 185, 30, 0.08);
+  }
+  50% {
+    background: rgba(245, 185, 30, 0.26);
+  }
+}
+
+.slot.target {
+  border-color: var(--yellow);
+  animation: targetPulse 1.1s ease-in-out infinite;
+}
+
+
+/* ---- fit the board on one screen ---- */
+
+/* --fit is set by Board (1 = full size, down to 0.68). Text shrinks less than the tiles so it stays readable. */
+.stage {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.words {
+  gap: calc(12px * var(--fit, 1));
+}
+
+.wordTop {
+  gap: calc(5px * var(--fit, 1));
+}
+
+.wordText {
+  font-size: max(12px, calc(14px * var(--fit, 1)));
+}
+
+.slot {
+  min-width: calc(56px * var(--fit, 1));
+  min-height: calc(48px * var(--fit, 1));
+}
+
+.tile {
+  min-width: calc(56px * var(--fit, 1));
+  height: calc(44px * var(--fit, 1));
+  padding: 0 calc(11px * var(--fit, 1));
+  font-size: max(14px, calc(20px * var(--fit, 1)));
+}
+
+.pool {
+  gap: calc(10px * var(--fit, 1)) calc(7px * var(--fit, 1));
+}
+
+/* On shorter screens the header and the rows above the board slim down too. */
+@media (max-height: 800px) {
+  .stage {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    gap: 8px;
+  }
+  .header {
+    padding: 6px 10px;
+    border-radius: 12px;
+  }
+  .backBtn {
+    width: 36px;
+    height: 36px;
+  }
+  .eyebrow {
+    display: none;
+  }
+  .title {
+    font-size: 22px;
+  }
+  .themeBanner {
+    font-size: 18px;
+  }
+  .apiNote {
+    display: none;
+  }
+  .roomy .header,
+  .roomy .metaRow,
+  .roomy .words {
+    margin-top: 0;
+  }
+  .roomy .themeBanner {
+    padding-top: 0;
+  }
+}

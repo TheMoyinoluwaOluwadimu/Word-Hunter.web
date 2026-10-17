@@ -260,8 +260,8 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
       )}
 
       <p className={styles.apiNote}>
-        Fill every slot. Correctness is only checked once the whole board is full · tap a filled tile to send it back to
-        the pool
+        Drag a tile into a slot, or tap a tile and then tap a slot. Correctness is only checked once the whole board
+        is full · tap a placed tile to send it back
       </p>
 
       <ConfirmDialog
