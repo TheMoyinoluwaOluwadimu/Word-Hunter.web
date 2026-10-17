@@ -135,7 +135,7 @@ export default function ChallengeSpin() {
   const landed = phase === 'landed';
 
   return (
-    <div className={cx(game.stage, game.roomy)}>
+    <div className={cx(game.stage, game.roomy, 'enter')}>
       <header className={game.header}>
         <Link to="/" className={game.backBtn} aria-label="Back to menu">
           <BackIcon />

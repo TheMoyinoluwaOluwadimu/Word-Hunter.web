@@ -2,6 +2,8 @@ import { useCallback, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import ConfirmDialog from '../components/ConfirmDialog';
+import Confetti from '../components/Confetti';
+import CountUp from '../components/CountUp';
 import { BackIcon, StarIcon, StopwatchIcon, StreakIcon, TrophyIcon } from '../components/icons';
 import Board from '../game/Board';
 import styles from '../game/Game.module.css';
@@ -12,6 +14,7 @@ import type { PuzzleState } from '../hooks/usePuzzle';
 import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
 import { useTimer } from '../hooks/useTimer';
 import { finishDailyRun, startDailyRun } from '../lib/dailyRun';
+import { buzzSolved } from '../lib/haptics';
 import { formatTime } from '../lib/format';
 import { playSolvedSound } from '../lib/sound';
 import { hasSolvedToday, loadStats, timeUntilReset } from '../lib/storage';
@@ -73,6 +76,7 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
   const handleSolved = useCallback(() => {
     const secs = stop();
     playSolvedSound();
+    buzzSolved();
     if (practice) {
       const rec = secs === null || !file ? null : registerPracticeSolve(file, secs);
       setResult({ replay: false, newBest: rec?.newBest ?? false, best: rec?.best ?? null });
@@ -112,7 +116,7 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
   const overlayTitle = result?.newBest ? 'New best!' : result?.replay ? 'Nice replay!' : 'Well built!';
 
   return (
-    <div className={styles.stage}>
+    <div className={`${styles.stage} enter`}>
       <header className={styles.header}>
         <Link
           to={exitPath}
@@ -213,6 +217,7 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
 
       {result && (
         <div className={styles.overlay} role="dialog" aria-label="Puzzle solved">
+          <Confetti />
           <div className={styles.stars} aria-hidden="true">
             <StarIcon />
             <StarIcon />
@@ -232,7 +237,9 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
           ) : (
             <div className={styles.overlayFire}>
               <StreakIcon size={26} />
-              <span data-testid="final-streak">{stats.streak}</span>
+              <span data-testid="final-streak">
+                <CountUp from={result.replay ? stats.streak : Math.max(0, stats.streak - 1)} to={stats.streak} />
+              </span>
             </div>
           )}
           {practice && <p className={styles.overlayNote}>Practice doesn't count toward your streak.</p>}

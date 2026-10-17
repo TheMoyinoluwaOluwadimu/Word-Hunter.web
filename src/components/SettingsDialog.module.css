@@ -1,0 +1,211 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(10, 36, 28, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 20px 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* an orange toy-box panel with a ribbon title (same family as the other dialogs) */
+.dialog {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  background: var(--orange);
+  border-radius: 18px;
+  padding: 36px 16px 18px;
+  box-shadow: 0 7px 0 #b3600f, 0 16px 24px rgba(0, 0, 0, 0.45);
+  text-align: center;
+  animation: dialogIn 0.3s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.92);
+  }
+}
+
+.title {
+  position: absolute;
+  left: 50%;
+  top: -16px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  background: #b3600f;
+  color: var(--cream);
+  border: 3px solid var(--cream);
+  border-radius: 9px;
+  padding: 5px 22px;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.panel {
+  background: var(--cream);
+  color: var(--brown);
+  border-radius: 12px;
+  padding: 8px 14px;
+  margin: 0 0 16px;
+  box-shadow: inset 0 4px 0 rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 2px solid rgba(74, 42, 18, 0.1);
+}
+
+.rowText,
+.howToText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rowTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 1.1;
+}
+
+.rowSub {
+  margin: 0;
+  font-size: 12.5px;
+  opacity: 0.7;
+}
+
+/* the on/off switch: the knob springs across */
+.switch {
+  flex: none;
+  position: relative;
+  width: 58px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 99px;
+  background: #b9ab8e;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.switchOn {
+  background: var(--green);
+}
+
+.knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--cream);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+  transition: transform 0.28s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.switchOn .knob {
+  transform: translateX(26px);
+}
+
+.switch:active .knob {
+  width: 31px;
+}
+
+.switchOn:active .knob {
+  transform: translateX(21px);
+}
+
+/* how to play */
+.howTo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0 4px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--yellow);
+  color: var(--brown);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--yellow-d), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.howTo:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
+.howToMark {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--blue);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 24px;
+  box-shadow: 0 3px 0 var(--blue-d), inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+.chevron {
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+
+.howTo:hover .chevron {
+  transform: translateX(3px);
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+}
+
+.close {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  color: var(--brown);
+  padding: 8px 28px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--cream);
+  box-shadow: 0 4px 0 var(--wood-d);
+  cursor: pointer;
+}
+
+.close:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}

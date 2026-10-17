@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import AccountDialog from '../components/AccountDialog';
+import SettingsDialog from '../components/SettingsDialog';
 import {
   ArchiveIcon,
   ChallengeIcon,
@@ -29,6 +30,7 @@ export default function MainMenu() {
   const solvedToday = hasSolvedToday(stats, now);
   const { enabled, user, displayName } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   // Today's rank, once you've solved today's puzzle (null until then, or while signed out)
   const [rank, setRank] = useState<number | null>(null);
   const userId = user?.id;
@@ -54,11 +56,17 @@ export default function MainMenu() {
     puzzleState.status === 'ready' ? (puzzleState.puzzle.theme ?? 'Daily Puzzle') : puzzleState.status === 'error' ? 'Daily Puzzle' : 'Loading';
 
   return (
-    <div className={styles.stage}>
+    <div className={`${styles.stage} enter`}>
       <header className={styles.header}>
         <div className={styles.sign}>
           <h1 className={styles.title}>WordChunk</h1>
-          <button type="button" className={styles.settingsBtn} title="Settings" aria-label="Settings">
+          <button
+            type="button"
+            className={styles.settingsBtn}
+            title="Settings"
+            aria-label="Settings"
+            onClick={() => setSettingsOpen(true)}
+          >
             <SettingsIcon />
           </button>
         </div>
@@ -79,14 +87,14 @@ export default function MainMenu() {
               <span className={styles.profileName}>Guest</span>
             </>
           )}
-          <span className={styles.streakChip}>
+          <span key={stats.streak} className={cx(styles.streakChip, stats.streak > 0 && styles.streakPop)}>
             <StreakIcon />
             <span data-testid="header-streak">{stats.streak}</span>
           </span>
         </div>
       </header>
 
-      <div className={styles.body}>
+      <div className={`${styles.body} stagger`}>
         {/* today's puzzle */}
         <Link to="/play" className={cx(styles.today, solvedToday && styles.alreadySolved)}>
           <p className={styles.label}>Today's puzzle</p>
@@ -119,7 +127,7 @@ export default function MainMenu() {
               <ClockIcon />
               Resets in {timeUntilReset(now)}
             </span>
-            <span className={styles.cta}>{solvedToday ? 'Review' : 'Play'}</span>
+            <span className={cx(styles.cta, !solvedToday && styles.ctaPulse)}>{solvedToday ? 'Review' : 'Play'}</span>
           </div>
         </Link>
 
@@ -158,6 +166,7 @@ export default function MainMenu() {
       </div>
 
       <AccountDialog open={accountOpen} onClose={() => setAccountOpen(false)} />
+      <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
       <footer className={styles.footer}>
         <div className={styles.stat}>

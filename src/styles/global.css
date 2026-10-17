@@ -59,3 +59,49 @@ button {
     transition: none !important;
   }
 }
+
+/* ---- motion ---- */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/*
+ * Page entrance, and children arriving one after another. "backwards" (not "both") on purpose:
+ * once finished, no transform is left on the page, so position: fixed dialogs keep sticking to
+ * the screen instead of to the page.
+ */
+.enter {
+  animation: rise 0.38s ease-out backwards;
+}
+
+.stagger > * {
+  animation: rise 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) backwards;
+}
+.stagger > :nth-child(1) { animation-delay: 0.05s; }
+.stagger > :nth-child(2) { animation-delay: 0.11s; }
+.stagger > :nth-child(3) { animation-delay: 0.17s; }
+.stagger > :nth-child(4) { animation-delay: 0.23s; }
+.stagger > :nth-child(5) { animation-delay: 0.29s; }
+.stagger > :nth-child(6) { animation-delay: 0.35s; }
+.stagger > :nth-child(7) { animation-delay: 0.41s; }
+.stagger > :nth-child(8) { animation-delay: 0.47s; }
+.stagger > :nth-child(n + 9) { animation-delay: 0.53s; }
+
+/* buttons brighten a touch under a mouse, and ease in and out of their press */
+:where(button:not(:disabled)) {
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+@media (hover: hover) {
+  :where(button:not(:disabled):hover) {
+    filter: brightness(1.07);
+  }
+}

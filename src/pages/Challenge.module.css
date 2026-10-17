@@ -967,3 +967,42 @@
   background: var(--yellow);
   box-shadow: 0 3px 0 var(--yellow-d);
 }
+
+/* ---- motion ---- */
+
+@keyframes digitPop {
+  from {
+    scale: 0.3;
+    opacity: 0;
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+.timeDigit {
+  animation: digitPop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 100ms + 0.2s);
+}
+
+@keyframes trophyIn {
+  0% {
+    scale: 0.3;
+    rotate: -30deg;
+    opacity: 0;
+  }
+  70% {
+    scale: 1.15;
+    rotate: 8deg;
+    opacity: 1;
+  }
+  100% {
+    scale: 1;
+    rotate: 0deg;
+  }
+}
+
+.trophy {
+  animation: trophyIn 0.8s cubic-bezier(0.3, 1.4, 0.5, 1) 0.15s backwards;
+}

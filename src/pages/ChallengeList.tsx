@@ -103,7 +103,7 @@ export default function ChallengeList() {
   const signedOut = !authLoading && !userId;
 
   return (
-    <div className={cx(game.stage, game.roomy)}>
+    <div className={cx(game.stage, game.roomy, 'enter')}>
       <header className={game.header}>
         <Link to="/challenge" className={game.backBtn} aria-label="Back to challenge">
           <BackIcon />
@@ -153,7 +153,7 @@ export default function ChallengeList() {
         </div>
       ) : (
         <div className={styles.body}>
-          <ul className={styles.list}>
+          <ul className={cx(styles.list, 'stagger')}>
             {state.items.map((c, i) => {
               const theme = themes[c.puzzleFile] ?? fallbackTheme(c.puzzleFile);
               const d = describe(c);

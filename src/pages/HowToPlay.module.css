@@ -1,0 +1,242 @@
+/* How to play. Sits inside Game.module.css's .stage; block colours come from Challenge.module.css. */
+
+.mark {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--blue);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 26px;
+  box-shadow: 0 3px 0 var(--blue-d), inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  transform: rotate(5deg);
+}
+
+/* the looping demo */
+.demo {
+  background: var(--cream);
+  color: var(--brown);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 6px 0 var(--wood-d), 0 12px 18px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.clue {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.35;
+}
+
+.slots {
+  display: flex;
+  gap: 6px;
+  /* room under the slots for the tiles to fly in from */
+  padding-bottom: 4px;
+}
+
+.slot {
+  min-width: 62px;
+  height: 50px;
+  padding: 2px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(74, 42, 18, 0.13);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* at rest (and for reduced motion) the row is simply solved */
+.tile {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 1px;
+  color: var(--cream);
+  background: var(--green);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+  animation: demoTile 6.5s ease-in-out infinite backwards;
+}
+
+.t0 {
+  --fx: -48px;
+  animation-delay: 0s;
+}
+
+.t1 {
+  --fx: 26px;
+  animation-delay: 0.5s;
+}
+
+.t2 {
+  --fx: 70px;
+  animation-delay: 1s;
+}
+
+/* fly in from below, hover over the slot, drop, then lock green */
+@keyframes demoTile {
+  0% {
+    opacity: 0;
+    transform: translate(var(--fx), 96px) scale(0.8);
+    background: var(--blue);
+  }
+  8% {
+    opacity: 1;
+    transform: translate(var(--fx), 76px) scale(1);
+    background: var(--blue);
+  }
+  26% {
+    transform: translate(0, -9px) scale(1.1) rotate(-3deg);
+    background: var(--blue);
+  }
+  32% {
+    transform: translate(0, 0) scale(1);
+    background: var(--blue);
+  }
+  62% {
+    transform: none;
+    background: var(--blue);
+  }
+  70% {
+    transform: scale(1.14);
+    background: var(--green);
+  }
+  77% {
+    transform: none;
+    background: var(--green);
+  }
+  93% {
+    opacity: 1;
+    transform: none;
+    background: var(--green);
+  }
+  100% {
+    opacity: 0;
+    background: var(--green);
+  }
+}
+
+.win {
+  margin: 0;
+  align-self: flex-start;
+  padding: 3px 14px;
+  border-radius: 99px;
+  background: var(--green);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 17px;
+  box-shadow: 0 3px 0 var(--green-d);
+  animation: demoWin 6.5s ease-in-out 1s infinite backwards;
+}
+
+@keyframes demoWin {
+  0%,
+  66% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.9);
+  }
+  74% {
+    opacity: 1;
+    transform: none;
+  }
+  93% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* steps */
+.heading {
+  margin: 6px 0 -4px;
+  padding-inline: 4px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 21px;
+  letter-spacing: 0.5px;
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 14px;
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+.num {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 24px;
+  box-shadow: 0 4px 0 var(--edge), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+}
+
+.iconSlot {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+}
+
+.stepText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.stepTitle {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.3px;
+  line-height: 1.15;
+}
+
+.stepBody {
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--cream-dim);
+}
+
+.actions {
+  margin-top: auto;
+  padding: 6px 0 calc(40px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: stretch;
+}

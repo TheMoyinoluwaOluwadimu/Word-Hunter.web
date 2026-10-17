@@ -1,3 +1,5 @@
+import { getSettings } from './settings';
+
 // Click sounds synthesized with the Web Audio API, so there are no audio files to host.
 
 let ctx: AudioContext | null = null;
@@ -23,6 +25,7 @@ interface Tone {
 }
 
 function playTone({ freq, endFreq, duration = 0.09, type = 'triangle', peak = 0.2 }: Tone): void {
+  if (!getSettings().sound) return;
   const c = audio();
   if (!c) return;
   const now = c.currentTime;

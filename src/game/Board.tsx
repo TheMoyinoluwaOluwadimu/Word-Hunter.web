@@ -1,5 +1,6 @@
 import { useEffect, useReducer, useRef, useState } from 'react';
 import { cx } from '../lib/cx';
+import { buzzPlace, buzzReturn, buzzWrong } from '../lib/haptics';
 import { playPickupSound, playPlaceSound, playReturnSound } from '../lib/sound';
 import type { Puzzle, TileModel } from '../types';
 import { boardReducer, createBoard, slotKey } from './boardReducer';
@@ -63,6 +64,7 @@ export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
       return () => window.clearTimeout(t);
     }
     if (board.phase === 'revealing') {
+      buzzWrong();
       const t = window.setTimeout(() => dispatch({ type: 'RETRY' }), 500);
       return () => window.clearTimeout(t);
     }
@@ -115,12 +117,20 @@ export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
         const occupant = board.placements[slot];
         const blocked = occupant !== undefined && board.locked.includes(occupant);
         dispatch({ type: 'DROP', tileId: tile.id, slot });
-        if (blocked) playReturnSound();
-        else playPlaceSound();
+        if (blocked) {
+          playReturnSound();
+          buzzReturn();
+        } else {
+          playPlaceSound();
+          buzzPlace();
+        }
       } else {
         // a tap, or a drop on empty space, sends the tile back to the pool
         dispatch({ type: 'RETURN', tileId: tile.id });
-        if (wasPlaced) playReturnSound();
+        if (wasPlaced) {
+          playReturnSound();
+          buzzReturn();
+        }
       }
     };
     const onUp = (ev: PointerEvent) => finish(ev, false);

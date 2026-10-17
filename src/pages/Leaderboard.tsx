@@ -133,7 +133,7 @@ export default function Leaderboard() {
   }
 
   return (
-    <div className={cx(game.stage, game.roomy)}>
+    <div className={cx(game.stage, game.roomy, 'enter')}>
       <header className={game.header}>
         <Link to="/" className={game.backBtn} aria-label="Back to menu">
           <BackIcon />
@@ -246,7 +246,7 @@ export default function Leaderboard() {
             </div>
           ) : (
             <>
-              <div className={styles.podium}>
+              <div className={cx(styles.podium, 'stagger')}>
                 {PODIUM_ORDER.filter((i) => i < podium.length).map((i) => {
                   const e = podium[i];
                   return (
@@ -273,7 +273,7 @@ export default function Leaderboard() {
 
               {rest.length > 0 && (
                 <div className={cx(styles.listWrap, guest && styles.listGuest)}>
-                  <ol className={styles.list}>{(guest ? rest.slice(0, 3) : rest).map((e, i) => row(e, `${e.rank}-${i}`))}</ol>
+                  <ol className={cx(styles.list, 'stagger')}>{(guest ? rest.slice(0, 3) : rest).map((e, i) => row(e, `${e.rank}-${i}`))}</ol>
                   {guest && <div className={styles.fade} aria-hidden="true" />}
                 </div>
               )}

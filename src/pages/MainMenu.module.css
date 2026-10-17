@@ -326,3 +326,62 @@
   text-transform: uppercase;
   margin-top: 2px;
 }
+
+/* ---- motion ---- */
+
+/* the streak chip bounces when you arrive (and again whenever the number changes) */
+@keyframes streakPop {
+  0% {
+    scale: 1;
+  }
+  35% {
+    scale: 1.28;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+.streakPop {
+  animation: streakPop 0.55s cubic-bezier(0.3, 1.6, 0.5, 1) 0.5s;
+}
+
+/* an unsolved daily puzzle gently nudges you to play it */
+@keyframes ctaPulse {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.07;
+  }
+}
+
+.ctaPulse {
+  animation: ctaPulse 2.2s ease-in-out 1.2s infinite;
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  25% {
+    rotate: -10deg;
+  }
+  75% {
+    rotate: 10deg;
+  }
+}
+
+.card:hover .cardIcon {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+.settingsBtn svg {
+  transition: rotate 0.4s ease;
+}
+
+.settingsBtn:hover svg {
+  rotate: 60deg;
+}

@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import type { CSSProperties } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Confetti from '../components/Confetti';
 import { TrophyIcon } from '../components/icons';
 import { cx } from '../lib/cx';
 import { createChallenge } from '../lib/challenge';
@@ -28,7 +30,12 @@ function TimeBlocks({ seconds }: { seconds: number }) {
             :
           </span>
         ) : (
-          <span key={i} className={cx(styles.timeDigit, styles[colors[i % colors.length]])} aria-hidden="true">
+          <span
+            key={i}
+            className={cx(styles.timeDigit, styles[colors[i % colors.length]])}
+            style={{ '--i': i } as CSSProperties}
+            aria-hidden="true"
+          >
             {ch}
           </span>
         ),
@@ -44,7 +51,7 @@ function Standings({ challenge }: { challenge: Challenge }) {
       <h2 className={styles.standingsTitle}>
         {challenge.code} · {finished.length} {finished.length === 1 ? 'player' : 'players'}
       </h2>
-      <ol className={styles.standingsList}>
+      <ol className={cx(styles.standingsList, 'stagger')}>
         {finished.map((e, i) => (
           <li key={i} className={cx(styles.standRow, e.isMe && styles.standMe)}>
             {i < RANK_ICONS.length ? (
@@ -123,6 +130,7 @@ export default function ChallengeResult({ challenge }: { challenge: Challenge })
     const leader = others.length > 0 ? others[0] : undefined;
     return (
       <div className={styles.body}>
+        {others.length === 0 && <Confetti />}
         <div className={styles.hero}>
           <p className={styles.eyebrowLine}>Challenge {challenge.code}</p>
           <h2 className={styles.heroTitle}>{others.length === 0 ? 'Time set!' : 'Your challenge'}</h2>
@@ -180,6 +188,7 @@ export default function ChallengeResult({ challenge }: { challenge: Challenge })
   const tied = theirs !== null && mine === theirs;
   return (
     <div className={styles.body}>
+      {won && <Confetti />}
       <div className={styles.hero}>
         <div className={styles.trophy}>
           <TrophyIcon size={96} />

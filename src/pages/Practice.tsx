@@ -50,7 +50,7 @@ export default function Practice() {
   const total = archiveFiles.length;
 
   return (
-    <div className={styles.stage}>
+    <div className={`${styles.stage} enter`}>
       <header className={styles.sign}>
         <Link to="/" className={styles.backBtn} aria-label="Back to menu">
           <BackIcon />
@@ -79,7 +79,7 @@ export default function Practice() {
           <p className={styles.emptyText}>Yesterday's puzzle will show up here tomorrow.</p>
         </div>
       ) : (
-        <ul className={styles.list}>
+        <ul className={`${styles.list} stagger`}>
           {archiveFiles.map((file, i) => {
             const summary: Summary = summaries[file] ?? { status: 'loading' };
             const entry = progress[file];

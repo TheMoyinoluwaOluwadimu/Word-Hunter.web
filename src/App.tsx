@@ -8,6 +8,7 @@ import ChallengeList from './pages/ChallengeList';
 import ChallengePlay from './pages/ChallengePlay';
 import ChallengeSpin from './pages/ChallengeSpin';
 import Game from './pages/Game';
+import HowToPlay from './pages/HowToPlay';
 import Leaderboard from './pages/Leaderboard';
 import MainMenu from './pages/MainMenu';
 import Practice from './pages/Practice';
@@ -46,6 +47,7 @@ export default function App() {
         <Route path="/challenges" element={<ChallengeList />} />
         <Route path="/c/:code" element={<ChallengePlay />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/how-to-play" element={<HowToPlay />} />
         <Route path="/practice" element={<Practice />} />
         <Route path="/practice/:file" element={<PracticeGame />} />
         <Route path="*" element={<Navigate to="/" replace />} />
