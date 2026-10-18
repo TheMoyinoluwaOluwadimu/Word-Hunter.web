@@ -799,3 +799,8 @@
 .header + .metaRow {
   margin-top: calc(24px - var(--stage-gap, 14px));
 }
+
+/* 8px more room between the theme row and the first clue (adds to the existing gap on every screen) */
+.words {
+  padding-top: 8px;
+}
