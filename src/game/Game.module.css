@@ -6,7 +6,8 @@
   padding: calc(26px + env(safe-area-inset-top, 0px)) 22px 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  --stage-gap: 14px;
+  gap: var(--stage-gap);
 }
 
 /* header: wooden sign */
@@ -687,7 +688,8 @@
 .dock .footerBar {
   position: static;
   background: none;
-  padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px));
+  /* 24px of extra room under the tray and progress bar lifts the whole group */
+  padding: 8px 0 calc(32px + env(safe-area-inset-bottom, 0px));
 }
 
 .roomy .words {
@@ -758,7 +760,8 @@
 @media (max-height: 800px) {
   .stage {
     padding-top: calc(12px + env(safe-area-inset-top, 0px));
-    gap: 8px;
+    --stage-gap: 8px;
+    gap: var(--stage-gap);
   }
   .header {
     padding: 6px 10px;
@@ -788,4 +791,11 @@
   .roomy .themeBanner {
     padding-top: 0;
   }
+}
+
+/* Exactly 24px between the wooden header and the row with the clock, whatever the screen.
+   (The page's row gap is 14px, or 8px on short screens, and challenge screens add a little more;
+   this tops it up to 24 and overrides those extras.) */
+.header + .metaRow {
+  margin-top: calc(24px - var(--stage-gap, 14px));
 }
