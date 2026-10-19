@@ -4,7 +4,7 @@
   "source": "datamuse + dictionaryapi.dev (auto-suggested chunks, human-reviewed)",
   "puzzle": [
     {
-      "word": "A support structure comprising joined parts or",
+      "word": "A support structure of a building, or object",
       "answer": "framework",
       "chunks": [
         "fra",
@@ -13,7 +13,7 @@
       ]
     },
     {
-      "word": "A professional who designs buildings or other",
+      "word": "A professional who designs buildings",
       "answer": "architect",
       "chunks": [
         "a",
@@ -22,7 +22,7 @@
       ]
     },
     {
-      "word": "The machines constituting a production apparatus",
+      "word": "Machines that makes up a production apparatus",
       "answer": "machinery",
       "chunks": [
         "machi",
@@ -31,7 +31,7 @@
       ]
     },
     {
-      "word": "Any piece of equipment made for a",
+      "word": "Any machine made for a particular purpose",
       "answer": "device",
       "chunks": [
         "de",
