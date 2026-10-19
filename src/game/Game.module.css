@@ -21,7 +21,7 @@
   color: var(--brown);
   border-radius: 14px;
   padding: 9px 12px;
-  box-shadow: 0 5px 0 var(--wood-d), 0 9px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 0 2px var(--wood-d), 0 9px 12px rgba(0, 0, 0, 0.25);
 }
 
 .backBtn {
@@ -32,7 +32,7 @@
   place-items: center;
   border-radius: 10px;
   background: var(--cream);
-  box-shadow: 0 3px 0 var(--wood-d);
+  box-shadow: 0 0 0 1px #f4ddcc;
   text-decoration: none;
 }
 
@@ -61,6 +61,9 @@
   line-height: 1.05;
   letter-spacing: 0.5px;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stamp {
@@ -88,12 +91,12 @@
   gap: 6px;
   background: var(--cream);
   color: var(--brown);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 4px 12px 4px 8px;
   font-family: var(--font-display);
   font-size: 20px;
   font-variant-numeric: tabular-nums;
-  box-shadow: 0 3px 0 var(--wood-d);
+  box-shadow: 0 0 4px #a8743a;
 }
 
 .streak {
@@ -103,11 +106,11 @@
   gap: 5px;
   background: var(--yellow);
   color: var(--brown);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 3px 11px 3px 8px;
   font-family: var(--font-display);
   font-size: 19px;
-  box-shadow: 0 3px 0 var(--yellow-d);
+  box-shadow: 0 0 3px #b88410;
 }
 
 .themeBanner {
@@ -352,12 +355,12 @@
 
 .primaryBtn {
   background: var(--yellow);
-  box-shadow: 0 5px 0 var(--yellow-d), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: inset 0 4px 8px rgba(255, 255, 255, 0.4), inset 0 -5px 3px #d09a0c, 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .secondaryBtn {
   background: var(--cream);
-  box-shadow: 0 5px 0 var(--wood-d);
+  box-shadow: 0 0 0 1px #a8743a;
 }
 
 .primaryBtn:active,
@@ -418,7 +421,7 @@
   color: var(--brown);
   border-radius: 14px;
   padding: 8px 24px;
-  box-shadow: 0 5px 0 var(--wood-d);
+  box-shadow: 0 0 0 2px #a8743a;
   font-variant-numeric: tabular-nums;
 }
 
@@ -430,9 +433,9 @@
   font-size: 22px;
   background: var(--yellow);
   color: var(--brown);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 3px 14px 3px 10px;
-  box-shadow: 0 3px 0 var(--yellow-d);
+  box-shadow: 0 0 3px #b88410;
 }
 
 .overlayActions {
@@ -489,9 +492,15 @@
 
 .noticeActions {
   display: flex;
+  flex-direction: column;
   gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.noticeActions > * {
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .error {
@@ -655,15 +664,10 @@
 /* The tray and progress bar stay pinned to the bottom of the screen while the clues scroll behind
    them, so the chunks are always in reach. A long tray scrolls inside itself. */
 .dock {
-  margin-top: auto;
-  padding-top: 8px;
-}
-
-/* Only when the board can't fit the screen even at its smallest size (data-scroll is set by Board). */
-.dock[data-scroll='yes'] {
   position: sticky;
   bottom: 0;
   z-index: 3;
+  margin-top: auto;
   padding-top: 14px;
   background: linear-gradient(to top, rgba(31, 107, 87, 0.98) 82%, rgba(31, 107, 87, 0));
 }
@@ -675,14 +679,11 @@
 
 .dock .pool {
   min-height: 0;
-  padding: calc(11px * var(--fit, 1)) 12px calc(10px * var(--fit, 1));
-}
-
-.dock[data-scroll='yes'] .pool {
   max-height: 30vh;
   overflow-y: auto;
   overscroll-behavior: contain;
   touch-action: pan-y;
+  padding: 14px 12px 12px;
 }
 
 .dock .footerBar {
@@ -720,43 +721,20 @@
 }
 
 
-/* ---- fit the board on one screen ---- */
+/* ---- a little more room for the board ---- */
 
-/* --fit is set by Board (1 = full size, down to 0.68). Text shrinks less than the tiles so it stays readable. */
 .stage {
   min-height: 100vh;
   min-height: 100dvh;
 }
 
-.words {
-  gap: calc(12px * var(--fit, 1));
-}
 
-.wordTop {
-  gap: calc(5px * var(--fit, 1));
-}
 
-.wordText {
-  font-size: max(12px, calc(14px * var(--fit, 1)));
-}
 
-.slot {
-  min-width: calc(56px * var(--fit, 1));
-  min-height: calc(48px * var(--fit, 1));
-}
 
-.tile {
-  min-width: calc(56px * var(--fit, 1));
-  height: calc(44px * var(--fit, 1));
-  padding: 0 calc(11px * var(--fit, 1));
-  font-size: max(14px, calc(20px * var(--fit, 1)));
-}
 
-.pool {
-  gap: calc(10px * var(--fit, 1)) calc(7px * var(--fit, 1));
-}
 
-/* On shorter screens the header and the rows above the board slim down too. */
+/* On shorter screens the header and the rows above the board slim down. */
 @media (max-height: 800px) {
   .stage {
     padding-top: calc(12px + env(safe-area-inset-top, 0px));

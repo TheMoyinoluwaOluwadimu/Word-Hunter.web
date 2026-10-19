@@ -13,6 +13,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  margin-top: 24px;
 }
 
 /* wooden sign */
@@ -27,7 +28,7 @@
   color: var(--brown);
   border-radius: 14px;
   padding: 9px 12px;
-  box-shadow: 0 5px 0 var(--wood-d), 0 9px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 0 2px var(--wood-d), 0 9px 12px rgba(0, 0, 0, 0.25);
 }
 
 .title {
@@ -48,7 +49,7 @@
   border: 0;
   border-radius: 10px;
   background: var(--cream);
-  box-shadow: 0 3px 0 var(--wood-d);
+  box-shadow: 0 0 0 1px #f4ddcc;
   cursor: pointer;
 }
 
@@ -73,7 +74,7 @@
   place-items: center;
   font-family: var(--font-display);
   font-size: 18px;
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 2px 3px rgba(255, 255, 255, 0.3), inset 0 -2px 2px #00368e5f;
 }
 
 .profileBtn {
@@ -96,17 +97,23 @@
   font-size: 16px;
 }
 
+.signLink {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.4px;
+}
+
 .streakChip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   background: var(--yellow);
   color: var(--brown);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 3px 11px 3px 8px;
   font-family: var(--font-display);
   font-size: 18px;
-  box-shadow: 0 3px 0 var(--yellow-d);
+  box-shadow: 0 0 3px #b88410;
 }
 
 /* body */
@@ -135,7 +142,7 @@
   background: var(--red);
   border-radius: 16px;
   padding: 18px 18px 16px;
-  box-shadow: 0 6px 0 var(--red-d), 0 12px 14px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 3px 0 var(--red-d), 0 12px 14px rgba(0, 0, 0, 0.28);
   transform: rotate(-1deg);
   transition: transform 0.15s ease;
 }
@@ -209,7 +216,7 @@
   color: var(--brown);
   border-radius: 12px;
   padding: 8px 22px;
-  box-shadow: 0 5px 0 var(--yellow-d), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 0 #b88410, inset 0 -4px 2px #d29d1466, inset 0 3px 1px #fff4dc34;
 }
 
 /* toy-box label cards */
@@ -229,7 +236,7 @@
   padding: 14px 14px 14px;
   cursor: pointer;
   text-decoration: none;
-  box-shadow: 0 5px 0 var(--wood-d), 0 9px 10px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 2px 0 #b9a372, 0 9px 10px rgba(0, 0, 0, 0.22);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -247,7 +254,7 @@
 
 .card:active {
   transform: translateY(3px);
-  box-shadow: 0 2px 0 var(--wood-d);
+  box-shadow: 0 0 0 2px #b9a372;
 }
 
 .card .label {
@@ -279,6 +286,7 @@
   align-items: center;
   gap: 12px;
   transform: rotate(0.4deg);
+  box-shadow: 0 0 0 2px #b9a372, 0 9px 10px rgba(0, 0, 0, 0.22);
 }
 
 .wide .cardIcon {
@@ -302,6 +310,7 @@
 .footer {
   display: flex;
   gap: 10px;
+  margin-bottom: 48px;
 }
 
 .stat {

@@ -79,7 +79,7 @@ export default function MainMenu() {
               aria-label={user ? 'Account' : 'Sign in'}
             >
               <span className={styles.avatar}>{displayName.charAt(0).toUpperCase()}</span>
-              <span className={styles.profileName}>{user ? displayName : 'Guest · Sign in'}</span>
+              <span className={styles.profileName}>{user ? displayName : <>Guest · <span className={styles.signLink}>Sign in?</span></>}</span>
             </button>
           ) : (
             <>
@@ -116,12 +116,7 @@ export default function MainMenu() {
               <CheckIcon />
               Solved today
             </div>
-          ) : (
-            <div className={styles.badge}>
-              <TrophyIcon />
-              WordChunk yesterday
-            </div>
-          )}
+          ) : null}
           <div className={styles.todayMeta}>
             <span className={styles.countdown}>
               <ClockIcon />

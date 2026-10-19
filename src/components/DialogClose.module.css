@@ -1,0 +1,24 @@
+.close {
+  position: absolute;
+  top: -14px;
+  right: -13px;
+  width: 45px;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+  transition: transform 0.12s ease;
+}
+
+.close img {
+  display: block;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+
+.close:active {
+  transform: scale(0.92);
+}

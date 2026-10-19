@@ -128,9 +128,15 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
         </Link>
         <div className={styles.headings}>
           <p className={styles.eyebrow}>{practice ? 'Practice' : 'Puzzle of the Day'}</p>
-          <h1 className={styles.title}>WordChunk</h1>
+          {/* hidden (not swapped) while loading, so no placeholder theme ever flashes */}
+          <h1
+            className={styles.title}
+            data-testid="theme"
+            style={{ visibility: puzzleState.status === 'loading' ? 'hidden' : 'visible' }}
+          >
+            {themeText}
+          </h1>
         </div>
-        <div className={styles.stamp}>{practice ? 'PRACTICE' : 'LIVE DEMO'}</div>
       </header>
 
       <div className={styles.metaRow}>
@@ -151,16 +157,6 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
             <span data-testid="streak">{stats.streak}</span>
           </div>
         )}
-      </div>
-
-      <div className={styles.themeBanner}>
-        {/* hidden (not swapped) while loading, so no placeholder theme ever flashes */}
-        <span data-testid="theme" style={{ visibility: puzzleState.status === 'loading' ? 'hidden' : 'visible' }}>
-          {themeText}
-        </span>
-        <span className={styles.themeCount}>
-          {puzzleState.status === 'ready' ? `${puzzleState.puzzle.items.length} words` : ''}
-        </span>
       </div>
 
       {puzzleState.status === 'loading' && (
@@ -201,7 +197,7 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
             </p>
             <div className={styles.noticeActions}>
               <button type="button" className={styles.secondaryBtn} onClick={() => setShowClosed(false)}>
-                Practice again (won't count)
+                Replay
               </button>
               <Link to="/" className={styles.secondaryBtn}>
                 Main menu

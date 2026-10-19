@@ -4,6 +4,7 @@ import { buzz, canVibrate } from '../lib/haptics';
 import { setSetting, useSettings } from '../lib/settings';
 import { playPlaceSound } from '../lib/sound';
 import styles from './SettingsDialog.module.css';
+import DialogClose from './DialogClose';
 
 interface SettingsDialogProps {
   open: boolean;
@@ -50,6 +51,7 @@ export default function SettingsDialog({ open, onClose }: SettingsDialogProps) {
         aria-labelledby="settings-title"
         onClick={(e) => e.stopPropagation()}
       >
+        <DialogClose onClick={onClose} />
         <h2 id="settings-title" className={styles.title}>
           Settings
         </h2>

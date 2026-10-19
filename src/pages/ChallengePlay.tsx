@@ -196,7 +196,6 @@ export default function ChallengePlay() {
   const words = puzzleState.status === 'ready' ? puzzleState.puzzle.items.length : null;
 
   const eyebrow = challenge && !challenge.isCreator ? `Challenge vs ${nameOf(challenge)}` : 'Challenge';
-  const stamp = playing ? '1 TRY' : challenge ? challenge.code : 'NEW';
 
   function handleBack(e: React.MouseEvent) {
     // Leaving mid-run doesn't pause anything, so say so before going.
@@ -219,7 +218,7 @@ export default function ChallengePlay() {
             <Link to="/challenge" className={styles.bigBtn}>
               New challenge
             </Link>
-            <Link to="/" className={styles.linkBtn}>
+            <Link to="/" className={styles.secBtn}>
               Main menu
             </Link>
           </div>
@@ -231,7 +230,7 @@ export default function ChallengePlay() {
             <div className={styles.inviteRow}>
               <span className={styles.avatar}>{nameOf(view.challenge).charAt(0).toUpperCase()}</span>
               <p className={styles.inviteText}>
-                {nameOf(view.challenge)} challenged you{theme ? <> on {theme}</> : null}
+                {nameOf(view.challenge)} challenged you
               </p>
             </div>
             {view.challenge.entries.find((e) => e.isCreator)?.seconds != null && (
@@ -308,7 +307,6 @@ export default function ChallengePlay() {
               >
                 {puzzleState.status === 'error' ? "Can't load puzzle" : view.resume ? 'Resume' : "I'm ready"}
               </button>
-              <p className={styles.fine}>Doesn't count toward your daily streak</p>
             </div>
           </div>
         );
@@ -351,10 +349,6 @@ export default function ChallengePlay() {
                 </div>
               )}
             </div>
-            <div className={game.themeBanner}>
-              <span>Theme: {puzzleState.puzzle.theme ?? 'Challenge'}</span>
-              <span className={game.themeCount}>{puzzleState.puzzle.items.length} words</span>
-            </div>
             <Board puzzle={puzzleState.puzzle} seed={view.start.seed} onStart={() => {}} onSolved={handleSolved} />
           </>
         );
@@ -376,9 +370,12 @@ export default function ChallengePlay() {
         </Link>
         <div className={game.headings}>
           <p className={game.eyebrow}>{eyebrow}</p>
-          <h1 className={game.title}>WordChunk</h1>
+          <h1 className={game.title}>
+            {view.kind === 'playing' && puzzleState.status === 'ready'
+              ? `Theme: ${puzzleState.puzzle.theme ?? 'Challenge'}`
+              : 'WordChunk'}
+          </h1>
         </div>
-        <div className={game.stamp}>{stamp}</div>
       </header>
 
       {body()}

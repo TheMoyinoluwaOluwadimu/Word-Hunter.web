@@ -144,7 +144,6 @@ export default function ChallengeSpin() {
           <p className={game.eyebrow}>Versus</p>
           <h1 className={game.title}>Challenge</h1>
         </div>
-        <div className={game.stamp}>NEW</div>
       </header>
 
       {landed && (
@@ -175,7 +174,7 @@ export default function ChallengeSpin() {
             <p className={styles.heroSub}>
               {landed
                 ? 'You go first. Beat the clock, then send it on.'
-                : 'You play first and set the time. Then send it to a friend to beat.'}
+                : 'Play first, set the time, share to friends'}
             </p>
           </div>
 
@@ -231,7 +230,6 @@ export default function ChallengeSpin() {
                 <button type="button" className={styles.bigBtn} onClick={spin} disabled={!themes || phase === 'spinning'}>
                   {phase === 'spinning' ? 'Spinning...' : themes ? 'SPIN!' : 'Loading...'}
                 </button>
-                <p className={styles.fine}>Your friend gets the exact same puzzle</p>
               </>
             )}
             <Link to="/challenges" className={styles.linkBtn}>

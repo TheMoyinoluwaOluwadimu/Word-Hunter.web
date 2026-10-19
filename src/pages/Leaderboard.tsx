@@ -286,7 +286,7 @@ export default function Leaderboard() {
               <h2 className={styles.joinTitle}>Join the board</h2>
               <p className={styles.joinText}>Sign in and your times and streak get ranked against everyone playing.</p>
               <button type="button" className={challenge.bigBtn} onClick={() => setAccountOpen(true)}>
-                Sign in
+                Sign in to play
               </button>
               <p className={styles.joinFine}>Your progress on this device is kept</p>
             </section>

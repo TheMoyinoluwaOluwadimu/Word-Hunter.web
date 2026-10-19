@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { cx } from '../lib/cx';
 import { buzzPlace, buzzReturn, buzzWrong } from '../lib/haptics';
 import { playPickupSound, playPlaceSound, playReturnSound } from '../lib/sound';
@@ -30,7 +30,6 @@ const BLOCK_COLORS = 5;
 const SNAP_DISTANCE = 30; // a drop this close (px) to a slot still lands in it
 const EDGE = 110; // holding a tile within this many px of a screen edge scrolls the page
 const MAX_SCROLL_SPEED = 18; // px per frame at the very edge
-const MIN_FIT = 0.68; // the board never shrinks below this fraction of full size
 
 /** Picks one of the block paint colours from the chunk text, so a chunk always looks the same. */
 function blockColor(chunk: string): number {
@@ -65,48 +64,6 @@ export default function Board({ puzzle, onStart, onSolved, seed }: BoardProps) {
       setSelectedId(null);
     }
   }, [selectedId, board.phase, board.placements]);
-
-  // Shrink the board just enough to fit the screen: no scrolling, nothing pinned. It tries full size
-  // first, then smaller in small steps. If even the smallest size doesn't fit (a very short screen)
-  // it stays there and the tray pins to the bottom instead (see .dock in the CSS).
-  useLayoutEffect(() => {
-    const dock = dockRef.current;
-    const stage = dock?.parentElement;
-    if (!dock || !stage) return;
-    const root = document.documentElement;
-
-    const fit = () => {
-      const minHeight = stage.style.minHeight;
-      stage.style.minHeight = '0px'; // measure the content itself, not the screen-high page
-      dock.dataset.scroll = 'no';
-      let fits = false;
-      for (let scale = 1; scale >= MIN_FIT - 0.001; scale -= 0.04) {
-        root.style.setProperty('--fit', scale.toFixed(2));
-        if (stage.getBoundingClientRect().height <= window.innerHeight) {
-          fits = true;
-          break;
-        }
-      }
-      if (!fits) root.style.setProperty('--fit', String(MIN_FIT));
-      stage.style.minHeight = minHeight;
-      dock.dataset.scroll = fits ? 'no' : 'yes';
-    };
-
-    fit();
-    let frame = 0;
-    const refit = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(fit);
-    };
-    window.addEventListener('resize', refit);
-    // the display font arrives late and changes how the text wraps
-    void document.fonts?.ready.then(refit);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', refit);
-      root.style.removeProperty('--fit');
-    };
-  }, [puzzle]);
 
   // Whole board filled -> check it (after a beat, so the last drop registers visually).
   useEffect(() => {

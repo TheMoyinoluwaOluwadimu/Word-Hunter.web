@@ -167,7 +167,7 @@ export default function ChallengeList() {
                       <span className={styles.listName}>{theme}</span>
                       <span className={styles.listSub}>{d.line}</span>
                       <span className={styles.listMeta}>
-                        {when(c.createdAt)} · {c.isCreator ? 'you made it' : 'you joined'} · {c.code}
+                        {when(c.createdAt)} · {c.isCreator ? 'you created' : 'you joined'}
                       </span>
                     </span>
                     <span className={cx(styles.listCta, d.waiting && styles.listCtaHot)}>{d.cta}</span>

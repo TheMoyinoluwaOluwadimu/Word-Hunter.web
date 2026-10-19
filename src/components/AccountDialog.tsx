@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useAuth } from '../auth/AuthProvider';
 import styles from './AccountDialog.module.css';
+import DialogClose from './DialogClose';
 
 const COOLDOWN_SECONDS = 60;
 
@@ -114,6 +115,7 @@ export default function AccountDialog({ open, onClose }: AccountDialogProps) {
         aria-labelledby="account-title"
         onClick={(e) => e.stopPropagation()}
       >
+        <DialogClose onClick={onClose} />
         <h2 id="account-title" className={styles.title}>
           {user ? 'Account' : 'Sign in'}
         </h2>
@@ -196,6 +198,7 @@ export default function AccountDialog({ open, onClose }: AccountDialogProps) {
           )}
         </div>
 
+        {user && (
         <div className={styles.actions}>
           {user && !confirmDelete && (
             <>
@@ -231,10 +234,8 @@ export default function AccountDialog({ open, onClose }: AccountDialogProps) {
               </button>
             </>
           )}
-          <button type="button" className={styles.secondary} onClick={onClose}>
-            Close
-          </button>
         </div>
+        )}
       </div>
     </div>
   );

@@ -141,9 +141,6 @@ export default function SplashScreen() {
         </div>
         <p className={styles.tip}>{tip}</p>
       </div>
-      <p className={styles.skip} aria-hidden="true">
-        Tap to skip
-      </p>
     </div>
   );
 }

@@ -171,7 +171,7 @@ export default function ChallengeResult({ challenge }: { challenge: Challenge })
         {error && <p className={styles.error}>{error}</p>}
         <div className={styles.actions}>
           <button type="button" className={styles.bigBtn} onClick={share}>
-            Send to a friend
+            Share
           </button>
           <Link to="/" className={styles.secBtn}>
             Main menu
@@ -222,7 +222,7 @@ export default function ChallengeResult({ challenge }: { challenge: Challenge })
         <Link to="/" className={styles.secBtn}>
           Main menu
         </Link>
-        <button type="button" className={game.primaryBtn} onClick={challengeBack} disabled={busy}>
+        <button type="button" className={cx(game.primaryBtn, styles.challengeBtn)} onClick={challengeBack} disabled={busy}>
           {busy ? 'One moment...' : 'Challenge'}
         </button>
       </div>
