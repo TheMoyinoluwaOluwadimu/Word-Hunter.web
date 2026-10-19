@@ -1,0 +1,21 @@
+{
+  "theme": "Tech Companies",
+  "generated_at": "2026-10-19T09:00:00.000Z",
+  "source": "hand-written definitions, syllable-based chunks, human-reviewed",
+  "puzzle": [
+    { "word": "A young, fast-growing company", "answer": "startup", "chunks": ["start", "up"] },
+    { "word": "A startup worth over $1 billion", "answer": "unicorn", "chunks": ["uni", "corn"] },
+    { "word": "Someone who starts a business", "answer": "entrepreneur", "chunks": ["en", "tre", "pre", "neur"] },
+    { "word": "Programs that run on devices", "answer": "software", "chunks": ["soft", "ware"] },
+    { "word": "Someone who builds software", "answer": "developer", "chunks": ["de", "vel", "op", "er"] },
+    { "word": "A base that apps are built on", "answer": "platform", "chunks": ["plat", "form"] },
+    { "word": "Search giant behind Android", "answer": "google", "chunks": ["goo", "gle"] },
+    { "word": "Online store founded by Jeff Bezos", "answer": "amazon", "chunks": ["a", "ma", "zon"] },
+    { "word": "Maker of Windows and Xbox", "answer": "microsoft", "chunks": ["mi", "cro", "soft"] },
+    { "word": "Maker of the iPhone", "answer": "apple", "chunks": ["ap", "ple"] },
+    { "word": "Streaming service behind Stranger Things", "answer": "netflix", "chunks": ["net", "flix"] },
+    { "word": "Electric car maker led by Elon Musk", "answer": "tesla", "chunks": ["tes", "la"] },
+    { "word": "Nigerian payments company bought by Stripe", "answer": "paystack", "chunks": ["pay", "stack"] },
+    { "word": "African payments fintech", "answer": "flutterwave", "chunks": ["flut", "ter", "wave"] }
+  ]
+}

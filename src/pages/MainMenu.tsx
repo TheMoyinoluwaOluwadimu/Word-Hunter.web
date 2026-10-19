@@ -16,6 +16,7 @@ import { useNow } from '../hooks/useNow';
 import { usePlayerStats } from '../hooks//usePlayerStats';
 import { usePuzzle } from '../hooks/usePuzzle';
 import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
+import { dayNumber } from '../lib/schedule';
 import { cx } from '../lib/cx';
 import { getLeaderboard } from '../lib/leaderboard';
 import { hasSolvedToday, timeUntilReset } from '../lib/storage';
@@ -25,7 +26,7 @@ import styles from './MainMenu.module.css';
 export default function MainMenu() {
   const now = useNow(30_000);
   const sched = usePuzzleSchedule(now);
-  const puzzleState = usePuzzle(sched.status === 'ready' ? sched.schedule.daily : null);
+  const puzzleState = usePuzzle(sched.status === 'ready' ? sched.schedule.daily : null, 'puzzles', `day${dayNumber(now)}`);
   const { stats } = usePlayerStats();
   const solvedToday = hasSolvedToday(stats, now);
   const { enabled, user, displayName } = useAuth();

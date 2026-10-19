@@ -12,6 +12,7 @@ import { usePracticeProgress } from '../hooks/usePracticeProgress';
 import { usePuzzle } from '../hooks/usePuzzle';
 import type { PuzzleState } from '../hooks/usePuzzle';
 import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
+import { dayNumber } from '../lib/schedule';
 import { useTimer } from '../hooks/useTimer';
 import { finishDailyRun, startDailyRun } from '../lib/dailyRun';
 import { buzzSolved } from '../lib/haptics';
@@ -36,7 +37,7 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
   const practice = mode === 'practice';
   const sched = usePuzzleSchedule();
   const file = practice ? (practiceFile ?? null) : sched.status === 'ready' ? sched.schedule.daily : null;
-  const loaded = usePuzzle(file);
+  const loaded = usePuzzle(file, 'puzzles', practice ? undefined : `day${dayNumber()}`);
   const puzzleState: PuzzleState =
     sched.status === 'error' && !practice ? { status: 'error', message: sched.message } : loaded;
   const archive = sched.status === 'ready' ? sched.schedule.archive : [];

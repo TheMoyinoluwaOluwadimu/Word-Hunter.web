@@ -77,7 +77,7 @@ export default function ChallengePlay() {
   const userId = user?.id;
   const signedIn = userId !== undefined;
   const challenge = 'challenge' in view ? view.challenge : null;
-  const puzzleState = usePuzzle(challenge?.puzzleFile ?? null, 'challenges');
+  const puzzleState = usePuzzle(challenge?.puzzleFile ?? null, 'challenges', challenge?.code);
 
   const submit = useCallback((ch: Challenge, seconds: number) => {
     writePending({ code: ch.code, seconds });

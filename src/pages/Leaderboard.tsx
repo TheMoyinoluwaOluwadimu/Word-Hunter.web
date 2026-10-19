@@ -6,6 +6,7 @@ import { BackIcon, ClockIcon, StreakIcon, TrophyIcon } from '../components/icons
 import game from '../game/Game.module.css';
 import { usePuzzle } from '../hooks/usePuzzle';
 import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
+import { dayNumber } from '../lib/schedule';
 import { cx } from '../lib/cx';
 import { formatTime } from '../lib/format';
 import { getLeaderboard } from '../lib/leaderboard';
@@ -78,7 +79,7 @@ export default function Leaderboard() {
   const signedIn = userId !== undefined;
 
   const sched = usePuzzleSchedule();
-  const daily = usePuzzle(sched.status === 'ready' ? sched.schedule.daily : null);
+  const daily = usePuzzle(sched.status === 'ready' ? sched.schedule.daily : null, 'puzzles', `day${dayNumber()}`);
   const theme = daily.status === 'ready' ? daily.puzzle.theme : null;
 
   // signed-out visitors can look at the global boards, nothing more
