@@ -14,6 +14,7 @@ import type { PuzzleState } from '../hooks/usePuzzle';
 import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
 import type { PuzzleSpec } from '../lib/puzzle';
 import { markSeen } from '../lib/seen';
+import { WinSignInCard } from '../components/GuestPrompts';
 import { OfflineCard } from '../components/PwaUi';
 import { useOnline } from '../lib/pwa';
 import { useTimer } from '../hooks/useTimer';
@@ -262,6 +263,7 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
             </div>
           )}
           {practice && <p className={styles.overlayNote}>Practice doesn't count toward your streak.</p>}
+          {!practice && <WinSignInCard time={formatTime(timer.elapsed)} />}
           <div className={styles.overlayActions}>
             <button type="button" className={styles.primaryBtn} onClick={playAgain}>
               Play again

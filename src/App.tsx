@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { RETURN_KEY, useAuth } from './auth/AuthProvider';
 import { retryPendingDailyRun } from './lib/dailyRun';
 import { IconSprite } from './components/icons';
+import { SignInSheet } from './components/GuestPrompts';
 import { ConnectionStrip, InstallSheet, UpdateToast } from './components/PwaUi';
 import SplashScreen from './components/SplashScreen';
 import ChallengeList from './pages/ChallengeList';
@@ -44,6 +45,7 @@ export default function App() {
       <ConnectionStrip />
       <UpdateToast />
       <InstallSheet />
+      <SignInSheet />
       <Routes>
         <Route path="/" element={<MainMenu />} />
         <Route path="/play" element={<Game />} />

@@ -420,3 +420,13 @@
     translate: -3px 0;
   }
 }
+
+/* with the guest sign-in card on screen the rest tightens up a little, as in the design */
+.stage:has([role='note']) .body {
+  gap: 14px;
+  padding-top: 0;
+}
+
+.stage:has([role='note']) .footer {
+  margin-bottom: 6px;
+}

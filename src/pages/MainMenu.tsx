@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import AccountDialog from '../components/AccountDialog';
 import SettingsDialog from '../components/SettingsDialog';
@@ -18,6 +18,8 @@ import { usePuzzle } from '../hooks/usePuzzle';
 import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
 import { cx } from '../lib/cx';
 import { getLeaderboard } from '../lib/leaderboard';
+import { MenuSignInCard } from '../components/GuestPrompts';
+import { openSignInSheet, shouldAskBeforePlay } from '../lib/guest';
 import { maybeOfferInstall, useOnline } from '../lib/pwa';
 import { hasSolvedToday, timeUntilReset } from '../lib/storage';
 // @ts-ignore CSS modules are handled by the app bundler.
@@ -32,7 +34,8 @@ export default function MainMenu() {
   );
   const { stats } = usePlayerStats();
   const solvedToday = hasSolvedToday(stats, now);
-  const { enabled, user, displayName } = useAuth();
+  const { enabled, user, displayName, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [accountOpen, setAccountOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   // Today's rank, once you've solved today's puzzle (null until then, or while signed out)
@@ -121,15 +124,24 @@ export default function MainMenu() {
         </div>
       </header>
 
+      <MenuSignInCard />
+
       <div className={`${styles.body} stagger`}>
         {/* today's puzzle */}
         <Link
           to="/play"
           className={cx(styles.today, solvedToday && styles.alreadySolved)}
           onClick={(e) => {
-            if (!offlineNoPuzzle) return;
-            e.preventDefault();
-            window.location.reload(); // Retry
+            if (offlineNoPuzzle) {
+              e.preventDefault();
+              window.location.reload(); // Retry
+              return;
+            }
+            // a guest who has not picked "Play as guest" today gets the sign-in sheet first
+            if (enabled && !user && !authLoading && !solvedToday && shouldAskBeforePlay()) {
+              e.preventDefault();
+              openSignInSheet({ returnTo: '#/play', onGuest: () => navigate('/play') });
+            }
           }}
         >
           <p className={styles.label}>Today's puzzle</p>

@@ -33,10 +33,18 @@ export const RETURN_KEY = 'wordchunk_return_to';
  * Sign-in leaves the app (Google / an emailed link) and comes back to the start page, which would
  * lose a challenge link the player opened. Remember where they were; App sends them back.
  */
+let nextReturn: string | null = null;
+
+/** Lets a sign-in prompt say where the player should land afterwards (e.g. '#/play'), instead of the page they are on. */
+export function setNextReturn(hash: string | null) {
+  nextReturn = hash;
+}
+
 function rememberReturn() {
   try {
-    const hash = window.location.hash;
-    if (/^#\/(c\/|challenge)/.test(hash)) localStorage.setItem(RETURN_KEY, hash);
+    const hash = nextReturn ?? window.location.hash;
+    nextReturn = null;
+    if (/^#\/(c\/|challenge|play)/.test(hash)) localStorage.setItem(RETURN_KEY, hash);
     else localStorage.removeItem(RETURN_KEY);
   } catch {
     // storage unavailable: they land on the menu instead
