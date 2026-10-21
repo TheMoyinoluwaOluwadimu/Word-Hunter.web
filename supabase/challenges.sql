@@ -125,7 +125,10 @@ $$;
 -- API ----------------------------------------------------------------------------
 
 -- Creates a challenge on the given puzzle. Returns the code; the creator plays next.
-create or replace function public.create_challenge(p_puzzle_file text)
+-- p_seed (optional) decides which five words the board shows and how its tiles are shuffled. The app picks
+-- one that avoids words the creator has already played; without it the server picks a random seed.
+drop function if exists public.create_challenge(text);
+create or replace function public.create_challenge(p_puzzle_file text, p_seed integer default null)
 returns jsonb
 language plpgsql
 security definer
@@ -134,9 +137,11 @@ as $$
 declare
   v_uid uuid := auth.uid();
   v_code text;
+  v_seed integer := coalesce(p_seed, floor(random() * 2147483646)::int + 1);
 begin
   if v_uid is null then raise exception 'not_signed_in'; end if;
   if p_puzzle_file !~ '^[A-Za-z0-9_-]+\.json$' then raise exception 'bad_puzzle'; end if;
+  if v_seed < 1 then raise exception 'bad_puzzle'; end if;
   if (select count(*) from challenges
       where created_by = v_uid and created_at > now() - interval '1 day') >= 30 then
     raise exception 'too_many_challenges';
@@ -146,7 +151,7 @@ begin
     v_code := challenge_code();
     begin
       insert into challenges (code, puzzle_file, seed, created_by)
-      values (v_code, p_puzzle_file, floor(random() * 2147483647)::int, v_uid);
+      values (v_code, p_puzzle_file, v_seed, v_uid);
       exit;
     exception when unique_violation then
       -- code collision: try another
@@ -289,7 +294,7 @@ $$;
 
 revoke all on function public.challenge_code() from public, anon, authenticated;
 revoke all on function public.challenge_view(public.challenges) from public, anon, authenticated;
-revoke all on function public.create_challenge(text) from public, anon;
+revoke all on function public.create_challenge(text, integer) from public, anon;
 revoke all on function public.start_challenge(text) from public, anon;
 revoke all on function public.finish_challenge(text, integer) from public, anon;
 revoke all on function public.list_my_challenges() from public, anon;
@@ -297,7 +302,7 @@ revoke all on function public.get_challenge(text) from public;
 
 grant execute on function public.is_challenge_participant(uuid) to anon, authenticated;
 grant execute on function public.get_challenge(text) to anon, authenticated;
-grant execute on function public.create_challenge(text) to authenticated;
+grant execute on function public.create_challenge(text, integer) to authenticated;
 grant execute on function public.start_challenge(text) to authenticated;
 grant execute on function public.finish_challenge(text, integer) to authenticated;
 grant execute on function public.list_my_challenges() to authenticated;

@@ -1,6 +1,7 @@
 /* Leaderboard. Sits inside Game.module.css's .stage; block colours come from Challenge.module.css. */
 
 .tabs {
+  margin-top: 8px;
   display: flex;
   gap: 6px;
   padding: 5px;
@@ -20,6 +21,11 @@
   background: transparent;
   color: var(--cream);
   cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.tab:active {
+  transform: scale(0.95);
 }
 
 .tabOn {
@@ -80,7 +86,12 @@
   display: flex;
   align-items: flex-end;
   gap: 8px;
-  margin-top: 2px;
+  margin-top: 24px;
+}
+
+/* signed out there is no "Everyone / Friends" row above it, so it sits closer */
+.podiumGuest {
+  margin-top: 9px;
 }
 
 .podiumCol {
@@ -250,7 +261,9 @@
 }
 
 .joinCard {
-  margin-top: auto;
+  position: relative;
+  z-index: 1;
+  margin-top: auto; /* tucks under the faded list, as in the design */
   margin-bottom: 26px;
   background: var(--cream);
   color: var(--brown);
@@ -266,6 +279,12 @@
 
 .joinCard > button {
   align-self: stretch;
+  height: 49px;
+  padding: 0 23px;
+  font-size: 24px;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  box-shadow: inset 0 4px 8px rgba(255, 255, 255, 0.4), inset 0 -5px 3px #d09a0c, 0 2px 8px #00000033;
 }
 
 .joinTitle {
@@ -295,7 +314,7 @@
   bottom: 0;
   z-index: 2;
   margin-top: auto;
-  padding: 18px 0 calc(22px + env(safe-area-inset-bottom, 0px));
+  padding: 24px 0 calc(22px + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(to top, rgba(31, 107, 87, 0.97) 70%, rgba(31, 107, 87, 0));
 }
 
@@ -380,4 +399,27 @@
 .pedestal {
   transform-origin: bottom;
   animation: grow 0.6s cubic-bezier(0.3, 1.3, 0.5, 1) 0.15s backwards;
+}
+
+/* the board slides in from the side you swiped (or tapped) towards */
+.slideNext {
+  animation: slideFromRight 0.34s cubic-bezier(0.25, 1, 0.4, 1) both;
+}
+
+.slidePrev {
+  animation: slideFromLeft 0.34s cubic-bezier(0.25, 1, 0.4, 1) both;
+}
+
+@keyframes slideFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(46px);
+  }
+}
+
+@keyframes slideFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-46px);
+  }
 }

@@ -6,14 +6,16 @@ import { BackIcon, ChallengeIcon } from '../components/icons';
 import game from '../game/Game.module.css';
 import { cx } from '../lib/cx';
 import { createChallenge } from '../lib/challenge';
-import { fetchPuzzle } from '../lib/puzzle';
-import { fetchChallengePool } from '../lib/schedule';
+import { chooseChallengeSeed, fetchBank, laneOf, WORDS_PER_PUZZLE } from '../lib/puzzle';
+import type { Puzzle } from '../types';
+import { fetchPuzzleFiles } from '../lib/schedule';
 import styles from './Challenge.module.css';
 
 interface Theme {
   file: string;
   theme: string;
   words: number;
+  bank: Puzzle;
 }
 
 type Phase = 'idle' | 'spinning' | 'landed';
@@ -51,12 +53,14 @@ export default function ChallengeSpin() {
     const ctrl = new AbortController();
     (async () => {
       try {
-        const files = await fetchChallengePool();
+        const files = await fetchPuzzleFiles();
         const list = await Promise.all(
           files.map(async (file): Promise<Theme | null> => {
             try {
-              const p = await fetchPuzzle(file, ctrl.signal, 'challenges');
-              return { file, theme: p.theme ?? file.replace(/\.json$/i, ''), words: p.items.length };
+              const bank = await fetchBank(file);
+              // a theme needs enough challenge-lane words to build a board
+              if (laneOf(bank, 'challenge').length < WORDS_PER_PUZZLE) return null;
+              return { file, theme: bank.theme ?? file.replace(/\.json$/i, ''), words: WORDS_PER_PUZZLE, bank };
             } catch {
               return null; // one bad file shouldn't take the spinner down
             }
@@ -124,7 +128,8 @@ export default function ChallengeSpin() {
     setCreating(true);
     setError(null);
     try {
-      const code = await createChallenge(themes[pos].file);
+      // the seed decides the five words: pick one that avoids words this player has already played
+      const code = await createChallenge(themes[pos].file, chooseChallengeSeed(themes[pos].file, themes[pos].bank));
       navigate(`/c/${code}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong. Please try again.');

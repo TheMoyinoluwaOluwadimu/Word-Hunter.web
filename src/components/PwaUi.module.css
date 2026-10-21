@@ -1,0 +1,669 @@
+/* offline strip, update toast, "latest version" toast and the install sheet.
+   Motion is gentle on purpose; prefers-reduced-motion switches all of it off in global.css. */
+
+/* shared glossy yellow + cream buttons (match the canvas) */
+.btnYellow,
+.btnCream {
+  font-family: var(--font-display);
+  font-size: 19px;
+  letter-spacing: 0.5px;
+  color: var(--brown);
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.btnYellow {
+  background: var(--yellow);
+  box-shadow: 0 2px 0 #b88410, inset 0 -4px 2px #d29d1466, inset 0 3px 1px #fff4dc34;
+}
+
+.btnCream {
+  background: var(--cream);
+  box-shadow: 0 0 0 1px #a8743a;
+}
+
+.btnYellow:active,
+.btnCream:active {
+  transform: translateY(2px) scale(0.97);
+  filter: brightness(0.96);
+}
+
+.btnYellow:disabled {
+  cursor: default;
+  filter: saturate(0.8);
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid rgba(74, 42, 18, 0.25);
+  border-top-color: var(--brown);
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- offline / back online strip ---------- */
+
+.strip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1500;
+  box-sizing: border-box;
+  padding: calc(9px + env(safe-area-inset-top, 0px)) 16px 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--brown);
+  background: var(--orange);
+  box-shadow: 0 3px 0 #b3600f;
+  animation: stripIn 0.4s cubic-bezier(0.3, 1.3, 0.5, 1) both;
+  pointer-events: none;
+}
+
+.stripLeaving {
+  animation: stripOut 0.28s ease-in forwards;
+}
+
+.stripOk {
+  background: var(--green);
+  color: var(--cream);
+  box-shadow: 0 3px 0 #1b6b45;
+}
+
+@keyframes stripIn {
+  from {
+    transform: translateY(-110%);
+  }
+}
+
+@keyframes stripOut {
+  to {
+    transform: translateY(-110%);
+  }
+}
+
+/* the wifi icon flickers like a signal that keeps trying */
+.wifi {
+  animation: flicker 2.2s ease-in-out infinite;
+  transform-origin: 50% 80%;
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 0.35;
+  }
+  55% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.55;
+  }
+}
+
+.tick {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--cream);
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 700;
+  animation: pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) 0.1s both;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0);
+  }
+}
+
+/* ---------- toasts (update ready / latest version) ---------- */
+
+.toast {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 1400;
+  max-width: 428px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 12px 16px;
+  border-radius: 16px;
+  background: var(--brown);
+  color: var(--cream);
+  box-shadow: 0 0 0 2px var(--wood), 0 14px 22px rgba(0, 0, 0, 0.45);
+  animation: toastIn 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+  touch-action: pan-x;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.toastGone {
+  transform: translateY(140%) !important;
+  opacity: 0;
+}
+
+@keyframes toastIn {
+  from {
+    transform: translateY(140%);
+    opacity: 0;
+  }
+}
+
+.toastIcon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--green);
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.3), 0 2px 0 #1b6b45;
+}
+
+.bob {
+  animation: bob 1.4s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(-1px);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+.toastText {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.25;
+  display: flex;
+  flex-direction: column;
+}
+
+.toastTitle {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.4px;
+}
+
+.toastSub {
+  font-size: 12.5px;
+  opacity: 0.8;
+}
+
+.refresh {
+  flex: none;
+  font-family: var(--font-display);
+  font-size: 17px;
+  letter-spacing: 0.5px;
+  color: var(--brown);
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--yellow);
+  box-shadow: 0 2px 0 #b88410, inset 0 -4px 2px #d29d1466, inset 0 3px 1px #fff4dc34;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.12s ease;
+}
+
+.refresh:active {
+  transform: translateY(2px) scale(0.96);
+}
+
+/* a soft glint sweeps across now and then, so the button reads as the thing to tap */
+.refresh::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: glint 3.2s ease-in-out 1s infinite;
+}
+
+@keyframes glint {
+  0%,
+  60% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+.toastOk {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 32px);
+  justify-content: center;
+  padding: 12px 18px;
+  gap: 10px;
+  white-space: nowrap;
+  animation: toastOkIn 0.5s cubic-bezier(0.3, 1.5, 0.5, 1) both, toastOkOut 0.4s ease-in 2.8s forwards;
+}
+
+.toastOk .tick {
+  width: 26px;
+  height: 26px;
+  background: var(--green);
+  color: var(--cream);
+  font-size: 15px;
+}
+
+@keyframes toastOkIn {
+  from {
+    transform: translate(-50%, 140%) scale(0.9);
+    opacity: 0;
+  }
+}
+
+@keyframes toastOkOut {
+  to {
+    transform: translate(-50%, 140%);
+    opacity: 0;
+  }
+}
+
+/* ---------- install sheet ---------- */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: rgba(10, 36, 28, 0.62);
+  animation: fadeIn 0.25s ease-out both;
+}
+
+.backdropOut {
+  animation: fadeOut 0.22s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1310;
+  max-width: 460px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background: var(--cream);
+  color: var(--brown);
+  border-radius: 22px 22px 0 0;
+  padding: 22px 22px calc(40px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -4px 0 var(--wood), 0 -14px 28px rgba(0, 0, 0, 0.4);
+  animation: sheetIn 0.45s cubic-bezier(0.25, 1.25, 0.4, 1) both;
+}
+
+.sheetIos {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.sheetOut {
+  animation: sheetOut 0.24s ease-in forwards;
+}
+
+@keyframes sheetIn {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes sheetOut {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+.grab {
+  width: 44px;
+  height: 5px;
+  border-radius: 99px;
+  background: rgba(74, 42, 18, 0.25);
+  margin: -8px auto 16px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.appIcon {
+  display: block;
+  border-radius: 16px;
+  box-shadow: 0 0 0 2px #a8743a, 0 6px 10px rgba(0, 0, 0, 0.25);
+  animation: iconPop 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) 0.2s both, wiggle 0.7s ease-in-out 0.8s;
+}
+
+@keyframes iconPop {
+  from {
+    transform: scale(0.4) rotate(-12deg);
+    opacity: 0;
+  }
+}
+
+@keyframes wiggle {
+  20% {
+    transform: rotate(-6deg);
+  }
+  45% {
+    transform: rotate(5deg);
+  }
+  70% {
+    transform: rotate(-3deg);
+  }
+}
+
+.headText {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 1.05;
+  letter-spacing: 0.5px;
+}
+
+.host {
+  margin: 3px 0 0;
+  font-size: 13.5px;
+  line-height: 1.35;
+  opacity: 0.8;
+}
+
+.list {
+  list-style: none;
+  margin: 16px 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.list li,
+.steps li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  animation: rise 0.4s cubic-bezier(0.3, 1.3, 0.5, 1) both;
+  animation-delay: calc(0.25s + var(--i, 0) * 90ms);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.badge {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--cream);
+}
+
+.steps {
+  list-style: none;
+  margin: 18px 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.steps li {
+  gap: 12px;
+}
+
+.stepNum {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--cream);
+  animation: pop 0.45s cubic-bezier(0.3, 1.7, 0.5, 1) both;
+  animation-delay: calc(0.35s + var(--i, 0) * 160ms);
+}
+
+.stepText {
+  flex: 1;
+  font-size: 14.5px;
+  line-height: 1.35;
+}
+
+.inlineIcon {
+  display: inline-flex;
+  vertical-align: -5px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.actions .btnCream {
+  flex: 1;
+}
+
+.actions .btnYellow {
+  flex: 1.4;
+}
+
+.full {
+  width: 100%;
+}
+
+/* a ring that breathes around the main button */
+.pulse {
+  position: relative;
+}
+
+.pulse::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 15px;
+  border: 2px solid var(--yellow);
+  opacity: 0;
+  animation: ring 2.4s ease-out 1.2s infinite;
+  pointer-events: none;
+}
+
+@keyframes ring {
+  0% {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+  70%,
+  100% {
+    transform: scale(1.08);
+    opacity: 0;
+  }
+}
+
+.done {
+  background: var(--green);
+  color: var(--cream);
+  box-shadow: 0 2px 0 #1b6b45, inset 0 3px 1px rgba(255, 255, 255, 0.25);
+}
+
+/* the arrow that points at Safari's Share button, at the bottom of the screen */
+.pointer {
+  position: fixed;
+  left: 50%;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  z-index: 1320;
+  transform: translateX(-50%);
+  color: var(--yellow);
+  font-size: 30px;
+  line-height: 1;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  animation: point 1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes point {
+  0%,
+  100% {
+    transform: translate(-50%, -6px);
+  }
+  50% {
+    transform: translate(-50%, 6px);
+  }
+}
+
+/* ---------- offline puzzle card (used inside the game screen) ---------- */
+
+.offlineWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+.offlineCard {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--cream);
+  color: var(--brown);
+  border-radius: 18px;
+  padding: 26px 20px 22px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 0 0 2px #b9a372, 0 14px 20px rgba(0, 0, 0, 0.3);
+  animation: rise 0.5s cubic-bezier(0.3, 1.3, 0.5, 1) both;
+}
+
+.offlineMark {
+  width: 78px;
+  height: 78px;
+  border-radius: 22px;
+  background: var(--orange);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 0 #b3600f, inset 0 3px 2px rgba(255, 255, 255, 0.35);
+  animation: pop 0.6s cubic-bezier(0.3, 1.7, 0.5, 1) 0.15s both;
+}
+
+.offlineTitle {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.05;
+  letter-spacing: 0.5px;
+}
+
+.offlineText {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  opacity: 0.85;
+}
+
+.offlineActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.shake {
+  animation: shake 0.4s;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-7px);
+  }
+  45% {
+    transform: translateX(6px);
+  }
+  70% {
+    transform: translateX(-4px);
+  }
+}
+
+.hint {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #b3600f;
+  animation: rise 0.3s ease-out both;
+}

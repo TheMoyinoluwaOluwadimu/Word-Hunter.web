@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -12,7 +12,10 @@ import { usePracticeProgress } from '../hooks/usePracticeProgress';
 import { usePuzzle } from '../hooks/usePuzzle';
 import type { PuzzleState } from '../hooks/usePuzzle';
 import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
-import { dayNumber } from '../lib/schedule';
+import type { PuzzleSpec } from '../lib/puzzle';
+import { markSeen } from '../lib/seen';
+import { OfflineCard } from '../components/PwaUi';
+import { useOnline } from '../lib/pwa';
 import { useTimer } from '../hooks/useTimer';
 import { finishDailyRun, startDailyRun } from '../lib/dailyRun';
 import { buzzSolved } from '../lib/haptics';
@@ -37,9 +40,23 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
   const practice = mode === 'practice';
   const sched = usePuzzleSchedule();
   const file = practice ? (practiceFile ?? null) : sched.status === 'ready' ? sched.schedule.daily : null;
-  const loaded = usePuzzle(file, 'puzzles', practice ? undefined : `day${dayNumber()}`);
+  // Practice draws fresh words each time it starts or restarts; the daily is the same for everyone that day.
+  const [practiceKey, setPracticeKey] = useState(() => Math.random().toString(36).slice(2));
+  const spec = useMemo<PuzzleSpec | null>(() => {
+    if (sched.status !== 'ready') return null;
+    if (!practice) return { mode: 'daily', appearance: sched.schedule.dailyAppearance };
+    return file ? { mode: 'practice', key: practiceKey, pastAppearances: sched.schedule.pastAppearances(file) } : null;
+  }, [sched, practice, file, practiceKey]);
+  const loaded = usePuzzle(file, spec);
   const puzzleState: PuzzleState =
     sched.status === 'error' && !practice ? { status: 'error', message: sched.message } : loaded;
+  const online = useOnline();
+  // remember which practice words were shown, so the next round leans on ones this player has not met
+  useEffect(() => {
+    if (practice && file && puzzleState.status === 'ready') {
+      markSeen('practice', file, puzzleState.puzzle.items.map((i) => i.id));
+    }
+  }, [practice, file, puzzleState]);
   const archive = sched.status === 'ready' ? sched.schedule.archive : [];
   const { stats, registerSolve } = usePlayerStats();
   const { progress, registerPracticeSolve } = usePracticeProgress();
@@ -90,6 +107,7 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
   }, [stop, practice, file, registerPracticeSolve, registerSolve, userId]);
 
   function playAgain() {
+    if (practice) setPracticeKey(Math.random().toString(36).slice(2));
     setResult(null);
     reset();
     setBoardKey((k) => k + 1);
@@ -111,7 +129,9 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
           ? 'Practice puzzle'
           : "Today's puzzle"
       : puzzleState.status === 'error'
-        ? 'Theme unavailable'
+        ? online
+          ? 'Theme unavailable'
+          : 'WordChunk'
         : 'Theme';
 
   const overlayTitle = result?.newBest ? 'New best!' : result?.replay ? 'Nice replay!' : 'Well built!';
@@ -166,7 +186,9 @@ export default function Game({ mode = 'daily', file: practiceFile }: GameProps) 
         </div>
       )}
 
-      {puzzleState.status === 'error' && (
+      {puzzleState.status === 'error' && !online && <OfflineCard />}
+
+      {puzzleState.status === 'error' && online && (
         <div className={styles.words}>
           <div className={styles.error}>
             {puzzleState.message}

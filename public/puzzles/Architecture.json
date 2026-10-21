@@ -1,52 +1,50 @@
 {
   "theme": "Architecture",
-  "generated_at": "2026-08-23T20:05:32.133Z",
-  "source": "datamuse + dictionaryapi.dev (auto-suggested chunks, human-reviewed)",
   "puzzle": [
-    {
-      "word": "A support structure of a building, or object",
-      "answer": "framework",
-      "chunks": [
-        "fra",
-        "me",
-        "work"
-      ]
-    },
-    {
-      "word": "A professional who designs buildings",
-      "answer": "architect",
-      "chunks": [
-        "a",
-        "rchi",
-        "tect"
-      ]
-    },
-    {
-      "word": "Machines that makes up a production apparatus",
-      "answer": "machinery",
-      "chunks": [
-        "machi",
-        "ne",
-        "ry"
-      ]
-    },
-    {
-      "word": "Any machine made for a particular purpose",
-      "answer": "device",
-      "chunks": [
-        "de",
-        "vi",
-        "ce"
-      ]
-    },
-    {
-      "word": "To design",
-      "answer": "engineering",
-      "chunks": [
-        "engi",
-        "nee",
-        "ring"
-      ]
-    }
+    {"word": "Professional who designs buildings", "answer": "architect", "chunks": ["archi", "tect"], "pool": "daily"},
+    {"word": "Detailed technical drawing of a building plan", "answer": "blueprint", "chunks": ["blue", "print"], "pool": "daily"},
+    {"word": "Very tall building with many floors", "answer": "skyscraper", "chunks": ["sky", "scra", "per"], "pool": "daily"},
+    {"word": "The base a building stands on", "answer": "foundation", "chunks": ["foun", "da", "tion"], "pool": "daily"},
+    {"word": "Tall upright pillar that supports a structure", "answer": "column", "chunks": ["col", "umn"], "pool": "daily"},
+    {"word": "Curved opening in a wall you can walk through", "answer": "archway", "chunks": ["arch", "way"], "pool": "daily"},
+    {"word": "Round building or room topped with a dome", "answer": "rotunda", "chunks": ["ro", "tun", "da"], "pool": "daily"},
+    {"word": "Type of bridge that hangs from cables", "answer": "suspension", "chunks": ["sus", "pen", "sion"], "pool": "daily"},
+    {"word": "Platform that sticks out from an upper wall", "answer": "balcony", "chunks": ["bal", "cony"], "pool": "daily"},
+    {"word": "Set of steps linking floors", "answer": "staircase", "chunks": ["stair", "case"], "pool": "daily"},
+    {"word": "The front face of a building", "answer": "facade", "chunks": ["fa", "cade"], "pool": "daily"},
+    {"word": "Window set into a roof", "answer": "skylight", "chunks": ["sky", "light"], "pool": "daily"},
+    {"word": "Open space surrounded by buildings", "answer": "courtyard", "chunks": ["court", "yard"], "pool": "daily"},
+    {"word": "Large and important Christian church", "answer": "cathedral", "chunks": ["ca", "the", "dral"], "pool": "daily"},
+    {"word": "Ancient Egyptian stone tomb with triangular sides", "answer": "pyramid", "chunks": ["pyra", "mid"], "pool": "daily"},
+    {"word": "Light open building used in parks and gardens", "answer": "pavilion", "chunks": ["pa", "vil", "ion"], "pool": "daily"},
+    {"word": "Picture made of tiny coloured tiles", "answer": "mosaic", "chunks": ["mosa", "ic"], "pool": "daily"},
+    {"word": "Flat paved area next to a house", "answer": "terrace", "chunks": ["ter", "race"], "pool": "daily"},
+    {"word": "Carved stone creature that drains water from a roof", "answer": "gargoyle", "chunks": ["gar", "goyle"], "pool": "daily"},
+    {"word": "Tower with a beam that guides ships", "answer": "lighthouse", "chunks": ["light", "house"], "pool": "daily"},
+    {"word": "Luxury apartment on the top floor", "answer": "penthouse", "chunks": ["pent", "house"], "pool": "challenge"},
+    {"word": "Temporary frame workers stand on while building", "answer": "scaffold", "chunks": ["scaf", "fold"], "pool": "challenge"},
+    {"word": "Tall passage that carries smoke out of a house", "answer": "chimney", "chunks": ["chim", "ney"], "pool": "challenge"},
+    {"word": "Roofed porch along the outside of a house", "answer": "veranda", "chunks": ["ve", "ran", "da"], "pool": "challenge"},
+    {"word": "Structure that shoots water into the air", "answer": "fountain", "chunks": ["foun", "tain"], "pool": "challenge"},
+    {"word": "Row of columns holding up a roof", "answer": "colonnade", "chunks": ["col", "on", "nade"], "pool": "challenge"},
+    {"word": "Floor of a building below ground level", "answer": "basement", "chunks": ["base", "ment"], "pool": "challenge"},
+    {"word": "Small garden structure with a roof and open sides", "answer": "gazebo", "chunks": ["ga", "ze", "bo"], "pool": "challenge"},
+    {"word": "Very large and grand house", "answer": "mansion", "chunks": ["man", "sion"], "pool": "challenge"},
+    {"word": "House with only one storey", "answer": "bungalow", "chunks": ["bun", "ga", "low"], "pool": "challenge"},
+    {"word": "Small cosy house in the countryside", "answer": "cottage", "chunks": ["cot", "tage"], "pool": "challenge"},
+    {"word": "Fortified medieval home of a lord", "answer": "castle", "chunks": ["cas", "tle"], "pool": "challenge"},
+    {"word": "Tall narrow structure", "answer": "tower", "chunks": ["tow", "er"], "pool": "challenge"},
+    {"word": "Structure built to remember a person or event", "answer": "monument", "chunks": ["mon", "u", "ment"], "pool": "challenge"},
+    {"word": "Glass building for growing plants", "answer": "greenhouse", "chunks": ["green", "house"], "pool": "challenge"},
+    {"word": "Slender tower of a mosque", "answer": "minaret", "chunks": ["mina", "ret"], "pool": "practice"},
+    {"word": "Tiered tower found in East Asian temples", "answer": "pagoda", "chunks": ["pago", "da"], "pool": "practice"},
+    {"word": "Dome-shaped house made of ice blocks", "answer": "igloo", "chunks": ["ig", "loo"], "pool": "practice"},
+    {"word": "Open-air round arena of ancient Rome", "answer": "amphitheatre", "chunks": ["amphi", "theatre"], "pool": "practice"},
+    {"word": "Roman bridge that carries water", "answer": "aqueduct", "chunks": ["aque", "duct"], "pool": "practice"},
+    {"word": "Support built against a wall", "answer": "buttress", "chunks": ["but", "tress"], "pool": "practice"},
+    {"word": "Long passage inside a building", "answer": "corridor", "chunks": ["cor", "ri", "dor"], "pool": "practice"},
+    {"word": "Open central hall with a glass roof", "answer": "atrium", "chunks": ["atri", "um"], "pool": "practice"},
+    {"word": "Low floor between two main floors", "answer": "mezzanine", "chunks": ["mez", "za", "nine"], "pool": "practice"},
+    {"word": "First stone laid in a building's foundation", "answer": "cornerstone", "chunks": ["cor", "ner", "stone"], "pool": "practice"}
   ]
 }

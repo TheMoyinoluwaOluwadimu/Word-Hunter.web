@@ -7,6 +7,7 @@ import { BackIcon, StopwatchIcon, TrophyIcon } from '../components/icons';
 import Board from '../game/Board';
 import game from '../game/Game.module.css';
 import { usePuzzle } from '../hooks/usePuzzle';
+import { markSeen } from '../lib/seen';
 import { useTimer } from '../hooks/useTimer';
 import { cx } from '../lib/cx';
 import { ChallengeError, finishChallenge, getChallenge, startChallenge } from '../lib/challenge';
@@ -77,7 +78,17 @@ export default function ChallengePlay() {
   const userId = user?.id;
   const signedIn = userId !== undefined;
   const challenge = 'challenge' in view ? view.challenge : null;
-  const puzzleState = usePuzzle(challenge?.puzzleFile ?? null, 'challenges', challenge?.code);
+  // the words are decided by the challenge's seed, which the server only hands over once the attempt starts
+  const seed = view.kind === 'playing' ? view.start.seed : 0;
+  const puzzleState = usePuzzle(challenge?.puzzleFile ?? null, challenge ? { mode: 'challenge', seed } : null);
+
+  // remember the words shown, so this player's next challenges lean on ones they have not met
+  const shownFile = view.kind === 'playing' ? view.challenge.puzzleFile : null;
+  useEffect(() => {
+    if (shownFile && puzzleState.status === 'ready') {
+      markSeen('challenge', shownFile, puzzleState.puzzle.items.map((i) => i.id));
+    }
+  }, [shownFile, puzzleState]);
 
   const submit = useCallback((ch: Challenge, seconds: number) => {
     writePending({ code: ch.code, seconds });
@@ -294,7 +305,7 @@ export default function ChallengePlay() {
                   </div>
                 </div>
               ) : (
-                <p className={styles.cardSub}>Set the time your friends will try to beat.</p>
+                <p className={styles.cardSub}>Put your best foot forward!</p>
               )}
             </section>
 

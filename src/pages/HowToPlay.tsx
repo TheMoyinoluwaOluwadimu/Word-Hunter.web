@@ -74,7 +74,7 @@ export default function HowToPlay() {
         <p className={styles.win}>Espresso!</p>
       </section>
 
-      <h2 className={styles.heading}>The basics</h2>
+      <h2 className={cx(styles.heading, styles.headingFirst)}>The basics</h2>
       <ol className={cx(styles.steps, 'stagger')}>
         {BASICS.map((s, i) => (
           <li key={s.title} className={styles.step}>

@@ -9,6 +9,7 @@
     "dev": "vite",
     "prebuild": "npm run puzzles:index",
     "build": "tsc --noEmit && vite build",
+    "postbuild": "node scripts/stamp-sw.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },

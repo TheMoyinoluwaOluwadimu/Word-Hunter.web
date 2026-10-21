@@ -140,8 +140,21 @@ function toSummary(r: any): ChallengeSummary {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-/** Creates a challenge on `puzzleFile` and returns its share code. The creator plays it next. */
-export async function createChallenge(puzzleFile: string): Promise<string> {
+/**
+ * Creates a challenge on `puzzleFile` and returns its share code. The creator plays it next.
+ * `seed` picks the five words (and shuffles the tiles); without it the server makes one up. If the database
+ * has not been updated to accept a seed yet (supabase/challenge-seed.sql), this falls back to the old call.
+ */
+export async function createChallenge(puzzleFile: string, seed?: number): Promise<string> {
+  if (seed !== undefined) {
+    try {
+      const r = await rpc<{ code: string }>('create_challenge', { p_puzzle_file: puzzleFile, p_seed: seed });
+      return r.code;
+    } catch (e) {
+      // an old create_challenge(text) has no p_seed: PostgREST answers "function not found" (unknown here)
+      if (!(e instanceof ChallengeError) || e.code !== 'unknown') throw e;
+    }
+  }
   const r = await rpc<{ code: string }>('create_challenge', { p_puzzle_file: puzzleFile });
   return r.code;
 }

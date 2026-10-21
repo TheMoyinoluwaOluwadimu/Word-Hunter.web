@@ -16,9 +16,9 @@ import { useNow } from '../hooks/useNow';
 import { usePlayerStats } from '../hooks//usePlayerStats';
 import { usePuzzle } from '../hooks/usePuzzle';
 import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
-import { dayNumber } from '../lib/schedule';
 import { cx } from '../lib/cx';
 import { getLeaderboard } from '../lib/leaderboard';
+import { maybeOfferInstall, useOnline } from '../lib/pwa';
 import { hasSolvedToday, timeUntilReset } from '../lib/storage';
 // @ts-ignore CSS modules are handled by the app bundler.
 import styles from './MainMenu.module.css';
@@ -26,7 +26,10 @@ import styles from './MainMenu.module.css';
 export default function MainMenu() {
   const now = useNow(30_000);
   const sched = usePuzzleSchedule(now);
-  const puzzleState = usePuzzle(sched.status === 'ready' ? sched.schedule.daily : null, 'puzzles', `day${dayNumber(now)}`);
+  const puzzleState = usePuzzle(
+    sched.status === 'ready' ? sched.schedule.daily : null,
+    sched.status === 'ready' ? { mode: 'daily', appearance: sched.schedule.dailyAppearance } : null,
+  );
   const { stats } = usePlayerStats();
   const solvedToday = hasSolvedToday(stats, now);
   const { enabled, user, displayName } = useAuth();
@@ -35,6 +38,23 @@ export default function MainMenu() {
   // Today's rank, once you've solved today's puzzle (null until then, or while signed out)
   const [rank, setRank] = useState<number | null>(null);
   const userId = user?.id;
+  const online = useOnline();
+  const offlineNoPuzzle = !online && puzzleState.status === 'error';
+  // tapping a card that needs the internet gives it a little shake instead of opening a dead screen
+  const [shaking, setShaking] = useState<'challenge' | 'rank' | null>(null);
+  const blockOffline = (which: 'challenge' | 'rank') => (e: React.MouseEvent) => {
+    if (online) return;
+    e.preventDefault();
+    setShaking(null);
+    window.requestAnimationFrame(() => setShaking(which));
+  };
+
+  // after a couple of solves, offer to install the app (once in a while, never while offline)
+  useEffect(() => {
+    if (!online) return;
+    const t = window.setTimeout(() => maybeOfferInstall(stats.totalSolved), 1800);
+    return () => window.clearTimeout(t);
+  }, [online, stats.totalSolved]);
 
   useEffect(() => {
     if (!userId || !solvedToday) {
@@ -54,7 +74,13 @@ export default function MainMenu() {
   }, [userId, solvedToday]);
 
   const themeText =
-    puzzleState.status === 'ready' ? (puzzleState.puzzle.theme ?? 'Daily Puzzle') : puzzleState.status === 'error' ? 'Daily Puzzle' : 'Loading';
+    puzzleState.status === 'ready'
+      ? (puzzleState.puzzle.theme ?? 'Daily Puzzle')
+      : puzzleState.status === 'error'
+        ? offlineNoPuzzle
+          ? 'Puzzle of the day'
+          : 'Daily Puzzle'
+        : 'Loading';
 
   return (
     <div className={`${styles.stage} enter`}>
@@ -97,7 +123,15 @@ export default function MainMenu() {
 
       <div className={`${styles.body} stagger`}>
         {/* today's puzzle */}
-        <Link to="/play" className={cx(styles.today, solvedToday && styles.alreadySolved)}>
+        <Link
+          to="/play"
+          className={cx(styles.today, solvedToday && styles.alreadySolved)}
+          onClick={(e) => {
+            if (!offlineNoPuzzle) return;
+            e.preventDefault();
+            window.location.reload(); // Retry
+          }}
+        >
           <p className={styles.label}>Today's puzzle</p>
           {/* hidden (not swapped) until the real theme arrives, so no placeholder ever flashes */}
           <h2
@@ -108,9 +142,11 @@ export default function MainMenu() {
             {themeText}
           </h2>
           <p className={styles.todaySub}>
-            {solvedToday
-              ? "You already solved today's puzzle. Tap to review or practice again."
-              : 'One puzzle a day. Solve it before the clock resets.'}
+            {offlineNoPuzzle
+              ? "Today's puzzle needs a connection to load."
+              : solvedToday
+                ? "You already solved today's puzzle. Tap to review or practice again."
+                : 'One puzzle a day. Solve it before the clock resets.'}
           </p>
           {solvedToday ? (
             <div className={styles.badge}>
@@ -121,21 +157,27 @@ export default function MainMenu() {
           <div className={styles.todayMeta}>
             <span className={styles.countdown}>
               <ClockIcon />
-              Resets in {timeUntilReset(now)}
+              {offlineNoPuzzle ? 'Waiting for a connection' : `Resets in ${timeUntilReset(now)}`}
             </span>
-            <span className={cx(styles.cta, !solvedToday && styles.ctaPulse)}>{solvedToday ? 'Review' : 'Play'}</span>
+            <span className={cx(styles.cta, !solvedToday && !offlineNoPuzzle && styles.ctaPulse)}>
+              {offlineNoPuzzle ? 'Retry' : solvedToday ? 'Review' : 'Play'}
+            </span>
           </div>
         </Link>
 
         {/* secondary pair */}
         <div className={styles.duo}>
-          <Link to="/challenge" className={styles.card}>
+          <Link
+            to="/challenge"
+            className={cx(styles.card, !online && styles.cardOffline, shaking === 'challenge' && styles.cardShake)}
+            onClick={blockOffline('challenge')}
+          >
             <span className={styles.cardIcon}>
               <ChallengeIcon />
             </span>
             <p className={styles.label}>Versus</p>
             <h3 className={styles.cardTitle}>Challenge</h3>
-            <p className={styles.cardSub}>Spin a theme, race a friend.</p>
+            <p className={styles.cardSub}>{online ? 'Spin a theme, race a friend.' : 'Needs a connection'}</p>
           </Link>
           <Link to="/practice" className={styles.card}>
             <span className={styles.cardIcon}>
@@ -148,14 +190,20 @@ export default function MainMenu() {
         </div>
 
         {/* rankings */}
-        <Link to="/leaderboard" className={`${styles.card} ${styles.wide}`}>
+        <Link
+          to="/leaderboard"
+          className={cx(styles.card, styles.wide, !online && styles.cardOffline, shaking === 'rank' && styles.cardShake)}
+          onClick={blockOffline('rank')}
+        >
           <span className={styles.cardIcon}>
             <TrophyIcon size={46} />
           </span>
           <div className={styles.wideText}>
             <p className={styles.label}>Rankings</p>
             <h3 className={styles.cardTitle}>Leaderboard</h3>
-            <p className={styles.cardSub}>{rank !== null ? "Today's fastest times" : "Solve today's puzzle to get ranked"}</p>
+            <p className={styles.cardSub}>
+              {!online ? 'Back online to see rankings' : rank !== null ? "Today's fastest times" : "Solve today's puzzle to get ranked"}
+            </p>
           </div>
           <span className={styles.rankNumber}>{rank !== null ? `#${rank}` : '#—'}</span>
         </Link>

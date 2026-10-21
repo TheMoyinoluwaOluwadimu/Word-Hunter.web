@@ -8,7 +8,7 @@ import { cx } from '../lib/cx';
 import { ChallengeError, listMyChallenges } from '../lib/challenge';
 import type { ChallengeSummary } from '../lib/challenge';
 import { formatTime } from '../lib/format';
-import { fetchPuzzle } from '../lib/puzzle';
+import { fetchBank } from '../lib/puzzle';
 import styles from './Challenge.module.css';
 
 type State =
@@ -89,15 +89,17 @@ export default function ChallengeList() {
   // theme names, read once per puzzle file
   useEffect(() => {
     if (state.status !== 'ready') return;
-    const ctrl = new AbortController();
+    let live = true;
     for (const file of new Set(state.items.map((c) => c.puzzleFile))) {
-      fetchPuzzle(file, ctrl.signal, 'challenges')
-        .then((p) => setThemes((t) => ({ ...t, [file]: p.theme ?? fallbackTheme(file) })))
+      fetchBank(file)
+        .then((p) => live && setThemes((t) => ({ ...t, [file]: p.theme ?? fallbackTheme(file) })))
         .catch(() => {
           // unreadable file: the row falls back to the file name
         });
     }
-    return () => ctrl.abort();
+    return () => {
+      live = false;
+    };
   }, [state]);
 
   const signedOut = !authLoading && !userId;

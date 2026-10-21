@@ -394,3 +394,29 @@
 .settingsBtn:hover svg {
   rotate: 60deg;
 }
+
+/* cards that need the internet while the phone is offline */
+.cardOffline {
+  opacity: 0.55;
+  transition: opacity 0.3s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cardShake {
+  animation: cardShake 0.4s;
+}
+
+@keyframes cardShake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  20% {
+    translate: -6px 0;
+  }
+  45% {
+    translate: 5px 0;
+  }
+  70% {
+    translate: -3px 0;
+  }
+}

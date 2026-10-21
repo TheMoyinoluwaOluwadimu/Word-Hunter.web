@@ -1,51 +1,50 @@
 {
   "theme": "Music",
-  "generated_at": "2026-08-27T16:44:57.889Z",
-  "source": "dictionaryapi.dev (primary) + datamuse md=d (fallback), auto-suggested chunks, human-reviewed",
   "puzzle": [
-    {
-      "word": "A sequence of notes that makes up a musical phrase",
-      "answer": "melody",
-      "chunks": [
-        "me",
-        "lo",
-        "dy"
-      ]
-    },
-    {
-      "word": "a long piece of music in four parts, and played by an orchestra ",
-      "answer": "symphony",
-      "chunks": [
-        "sy",
-        "mpho",
-        "ny"
-      ]
-    },
-    {
-      "word": "A large group of musicians who play together",
-      "answer": "orchestra",
-      "chunks": [
-        "o",
-        "rche",
-        "stra"
-      ]
-    },
-    {
-      "word": "A person who writes music.",
-      "answer": "composer",
-      "chunks": [
-        "co",
-        "mpo",
-        "ser"
-      ]
-    },
-    {
-      "word": "A musical performance",
-      "answer": "concert",
-      "chunks": [
-        "co",
-        "ncert"
-      ]
-    }
+    {"word": "A sequence of notes that makes up a musical phrase", "answer": "melody", "chunks": ["mel", "ody"], "pool": "daily"},
+    {"word": "A long piece of music in several parts, played by an orchestra", "answer": "symphony", "chunks": ["sym", "pho", "ny"], "pool": "daily"},
+    {"word": "A large group of musicians who play together", "answer": "orchestra", "chunks": ["or", "ches", "tra"], "pool": "daily"},
+    {"word": "A person who writes music", "answer": "composer", "chunks": ["com", "pos", "er"], "pool": "daily"},
+    {"word": "A live musical performance", "answer": "concert", "chunks": ["con", "cert"], "pool": "daily"},
+    {"word": "Notes sounded together to sound pleasing", "answer": "harmony", "chunks": ["har", "mony"], "pool": "daily"},
+    {"word": "Stringed instrument you strum or pluck", "answer": "guitar", "chunks": ["gui", "tar"], "pool": "daily"},
+    {"word": "Large keyboard instrument with black and white keys", "answer": "piano", "chunks": ["pia", "no"], "pool": "daily"},
+    {"word": "Small stringed instrument played with a bow", "answer": "violin", "chunks": ["vio", "lin"], "pool": "daily"},
+    {"word": "Brass instrument with three valves", "answer": "trumpet", "chunks": ["trum", "pet"], "pool": "daily"},
+    {"word": "Band member who keeps the beat", "answer": "drummer", "chunks": ["drum", "mer"], "pool": "daily"},
+    {"word": "Curved brass instrument with a reed", "answer": "saxophone", "chunks": ["sax", "o", "phone"], "pool": "daily"},
+    {"word": "Part of a song that repeats, or a large group of singers", "answer": "chorus", "chunks": ["cho", "rus"], "pool": "daily"},
+    {"word": "The words of a song", "answer": "lyrics", "chunks": ["lyr", "ics"], "pool": "daily"},
+    {"word": "How fast or slow music is played", "answer": "tempo", "chunks": ["tem", "po"], "pool": "daily"},
+    {"word": "Slow romantic or storytelling song", "answer": "ballad", "chunks": ["bal", "lad"], "pool": "daily"},
+    {"word": "Dramatic stage show where the story is sung", "answer": "opera", "chunks": ["op", "era"], "pool": "daily"},
+    {"word": "Person who leads an orchestra with a baton", "answer": "conductor", "chunks": ["con", "duc", "tor"], "pool": "daily"},
+    {"word": "Device that picks up a singer's voice", "answer": "microphone", "chunks": ["mi", "cro", "phone"], "pool": "daily"},
+    {"word": "Electronic instrument played with keys", "answer": "keyboard", "chunks": ["key", "board"], "pool": "daily"},
+    {"word": "Brass instrument with a slide", "answer": "trombone", "chunks": ["trom", "bone"], "pool": "challenge"},
+    {"word": "Large stringed instrument played between the knees", "answer": "cello", "chunks": ["cel", "lo"], "pool": "challenge"},
+    {"word": "Woodwind instrument with a single reed", "answer": "clarinet", "chunks": ["clar", "inet"], "pool": "challenge"},
+    {"word": "Small four-stringed instrument from Hawaii", "answer": "ukulele", "chunks": ["uku", "lele"], "pool": "challenge"},
+    {"word": "Hand drum with jingling metal discs", "answer": "tambourine", "chunks": ["tam", "bou", "rine"], "pool": "challenge"},
+    {"word": "Instrument of wooden bars struck with mallets", "answer": "xylophone", "chunks": ["xylo", "phone"], "pool": "challenge"},
+    {"word": "Squeezebox with keys and buttons", "answer": "accordion", "chunks": ["ac", "cor", "dion"], "pool": "challenge"},
+    {"word": "Large double-reed woodwind with a deep sound", "answer": "bassoon", "chunks": ["bas", "soon"], "pool": "challenge"},
+    {"word": "Round-bodied stringed instrument used in country music", "answer": "banjo", "chunks": ["ban", "jo"], "pool": "challenge"},
+    {"word": "Small mouth organ you blow and draw air through", "answer": "harmonica", "chunks": ["har", "moni", "ca"], "pool": "challenge"},
+    {"word": "Shaken Latin percussion pair", "answer": "maracas", "chunks": ["ma", "ra", "cas"], "pool": "challenge"},
+    {"word": "Metal plate crashed in a drum kit", "answer": "cymbal", "chunks": ["cym", "bal"], "pool": "challenge"},
+    {"word": "Small metal percussion instrument that rings when struck", "answer": "triangle", "chunks": ["tri", "an", "gle"], "pool": "challenge"},
+    {"word": "Scottish instrument with a bag and drones", "answer": "bagpipes", "chunks": ["bag", "pipes"], "pool": "challenge"},
+    {"word": "Genre pioneered by Fela Kuti", "answer": "afrobeat", "chunks": ["afro", "beat"], "pool": "challenge"},
+    {"word": "Artist who delivers rhymes over a beat", "answer": "rapper", "chunks": ["rap", "per"], "pool": "practice"},
+    {"word": "Person who performs songs with their voice", "answer": "singer", "chunks": ["sing", "er"], "pool": "practice"},
+    {"word": "Collection of songs released together", "answer": "album", "chunks": ["al", "bum"], "pool": "practice"},
+    {"word": "Your chosen list of songs to play in order", "answer": "playlist", "chunks": ["play", "list"], "pool": "practice"},
+    {"word": "Worn over the ears to listen privately", "answer": "headphones", "chunks": ["head", "phones"], "pool": "practice"},
+    {"word": "Sing along to a backing track with on-screen words", "answer": "karaoke", "chunks": ["kar", "a", "oke"], "pool": "practice"},
+    {"word": "Multi-day outdoor music event", "answer": "festival", "chunks": ["fes", "ti", "val"], "pool": "practice"},
+    {"word": "Music that accompanies a film", "answer": "soundtrack", "chunks": ["sound", "track"], "pool": "practice"},
+    {"word": "Extra song played after the show has ended", "answer": "encore", "chunks": ["en", "core"], "pool": "practice"},
+    {"word": "Makes a guitar or speaker louder", "answer": "amplifier", "chunks": ["am", "pli", "fier"], "pool": "practice"}
   ]
 }

@@ -105,3 +105,12 @@ button {
     filter: brightness(1.07);
   }
 }
+
+/* the "You're offline" strip is fixed at the top; screens other than the menu make room for it */
+body {
+  transition: padding-top 0.3s ease;
+}
+
+html.with-strip body {
+  padding-top: calc(38px + env(safe-area-inset-top, 0px));
+}

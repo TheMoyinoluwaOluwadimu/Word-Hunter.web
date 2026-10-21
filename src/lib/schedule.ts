@@ -1,7 +1,7 @@
 import { LAUNCH_DATE } from '../config';
 import { utcDate } from './storage';
 
-// The daily puzzle is picked from the ordered puzzle list by UTC date, so every player
+// The daily theme is picked from the ordered puzzle list by UTC date, so every player
 // gets the same one and the rollover matches the streak reset. No config to edit per day.
 
 export interface PuzzleSchedule {
@@ -9,6 +9,10 @@ export interface PuzzleSchedule {
   daily: string;
   /** Puzzles that have already been "the daily", newest first. Today's is never in here. */
   archive: string[];
+  /** How many turns today's theme has had as the daily before this one (0 the first time it comes up). */
+  dailyAppearance: number;
+  /** The turns a theme has already had as the daily, in the past. Today's turn is never in here. */
+  pastAppearances: (file: string) => number[];
 }
 
 /** Whole UTC days since LAUNCH_DATE (0 on launch day, never negative). */
@@ -25,34 +29,34 @@ export function buildSchedule(files: string[], now: Date = new Date()): PuzzleSc
   const day = dayNumber(now);
   const archive: string[] = [];
   for (let k = 1; k <= Math.min(day, files.length - 1); k++) archive.push(files[mod(day - k, files.length)]);
-  return { daily: files[mod(day, files.length)], archive };
+  const n = files.length;
+  const pastAppearances = (file: string): number[] => {
+    const at = files.indexOf(file);
+    const out: number[] = [];
+    // the theme sits on days at, at + n, at + 2n ...; only those before today have happened
+    for (let d = at; at >= 0 && d < day; d += n) out.push((d - at) / n);
+    return out;
+  };
+  return { daily: files[mod(day, n)], archive, dailyAppearance: Math.floor(day / n), pastAppearances };
 }
 
-const indexCache = new Map<string, Promise<string[]>>();
+let indexCache: Promise<string[]> | null = null;
 
-/** The ordered file list (index.json) of a puzzle folder, fetched once per page load. */
-function fetchIndex(folder: 'puzzles' | 'challenges'): Promise<string[]> {
-  let cached = indexCache.get(folder);
-  if (!cached) {
-    cached = (async () => {
-      const res = await fetch(`${import.meta.env.BASE_URL}${folder}/index.json`, { cache: 'no-cache' });
-      if (!res.ok) throw new Error(`Could not load the ${folder} list (HTTP ${res.status}).`);
+/** The ordered theme list (public/puzzles/index.json): the daily schedule, and the pool the Challenge spinner draws from. */
+export function fetchPuzzleFiles(): Promise<string[]> {
+  if (!indexCache) {
+    indexCache = (async () => {
+      const res = await fetch(`${import.meta.env.BASE_URL}puzzles/index.json`, { cache: 'no-cache' });
+      if (!res.ok) throw new Error(`Could not load the puzzle list (HTTP ${res.status}).`);
       const data = (await res.json()) as { files?: unknown };
       if (!Array.isArray(data.files) || data.files.length === 0 || !data.files.every((f) => typeof f === 'string')) {
-        throw new Error(`The ${folder} list is empty or malformed.`);
+        throw new Error('The puzzle list is empty or malformed.');
       }
       return data.files as string[];
     })().catch((e) => {
-      indexCache.delete(folder); // let a later visit retry
+      indexCache = null; // let a later visit retry
       throw e;
     });
-    indexCache.set(folder, cached);
   }
-  return cached;
+  return indexCache;
 }
-
-/** The daily schedule's puzzle list (public/puzzles/index.json). */
-export const fetchPuzzleFiles = () => fetchIndex('puzzles');
-
-/** The puzzles the Challenge spinner can land on (public/challenges/index.json). */
-export const fetchChallengePool = () => fetchIndex('challenges');

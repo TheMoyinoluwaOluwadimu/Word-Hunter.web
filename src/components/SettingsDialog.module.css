@@ -209,3 +209,59 @@
   transform: translateY(3px);
   box-shadow: none;
 }
+
+/* "Install app" row: the green sibling of "How to play" */
+.install {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0 4px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--green);
+  color: var(--cream);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px #1b6b45, inset 0 2px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.install:active {
+  transform: translateY(2px) scale(0.98);
+  filter: brightness(0.95);
+}
+
+.install:hover .chevron {
+  transform: translateX(3px);
+}
+
+.installMark {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--cream);
+  box-shadow: 0 2px 0 #a8743a;
+}
+
+.installArrow {
+  animation: installBob 1.6s ease-in-out infinite;
+}
+
+@keyframes installBob {
+  0%,
+  100% {
+    transform: translateY(-1px);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+}
+
+.installSub {
+  font-size: 12.5px;
+  opacity: 0.85;
+}

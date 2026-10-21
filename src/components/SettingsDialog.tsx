@@ -2,7 +2,9 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buzz, canVibrate } from '../lib/haptics';
 import { setSetting, useSettings } from '../lib/settings';
+import { openInstallSheet, useCanInstall } from '../lib/pwa';
 import { playPlaceSound } from '../lib/sound';
+import { DownloadIcon } from './PwaUi';
 import styles from './SettingsDialog.module.css';
 import DialogClose from './DialogClose';
 
@@ -30,6 +32,7 @@ function Switch({ checked, onChange, label }: { checked: boolean; onChange: (nex
 export default function SettingsDialog({ open, onClose }: SettingsDialogProps) {
   const settings = useSettings();
   const navigate = useNavigate();
+  const canInstall = useCanInstall();
 
   useEffect(() => {
     if (!open) return;
@@ -109,12 +112,28 @@ export default function SettingsDialog({ open, onClose }: SettingsDialogProps) {
               &rsaquo;
             </span>
           </button>
-        </div>
 
-        <div className={styles.actions}>
-          <button type="button" className={styles.close} onClick={onClose} autoFocus>
-            Done
-          </button>
+          {canInstall && (
+            <button
+              type="button"
+              className={styles.install}
+              onClick={() => {
+                onClose();
+                openInstallSheet();
+              }}
+            >
+              <span className={styles.installMark} aria-hidden="true">
+                <DownloadIcon color="#2f9d6a" className={styles.installArrow} />
+              </span>
+              <span className={styles.howToText}>
+                <span className={styles.rowTitle}>Install app</span>
+                <span className={styles.installSub}>Add WordChunk to your home screen</span>
+              </span>
+              <span className={styles.chevron} aria-hidden="true">
+                &rsaquo;
+              </span>
+            </button>
+          )}
         </div>
       </div>
     </div>

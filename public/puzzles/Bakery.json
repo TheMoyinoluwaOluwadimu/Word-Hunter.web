@@ -1,47 +1,50 @@
 {
-    "theme": "bakery",
-    "generated_at": "2026-10-15T22:45:01.454Z",
-    "source": "dictionaryapi.dev (primary) + datamuse md=d (fallback), auto-suggested chunks, human-reviewed",
-    "puzzle": [
-        {
-            "word": "A person who bakes and sells bread",
-            "answer": "baker",
-            "chunks": [
-                "ba",
-                "ker"
-            ]
-        },
-        {
-            "word": "A foodstuff made by baking dough",
-            "answer": "bread",
-            "chunks": [
-                "bread"
-            ]
-        },
-        {
-            "word": "A baked food item made from dough",
-            "answer": "pastry",
-            "chunks": [
-                "pa",
-                "stry"
-            ]
-        },
-        {
-            "word": "A convenience store",
-            "answer": "cafe",
-            "chunks": [
-                "ca",
-                "fe"
-            ]
-        },
-        {
-            "word": "buttery, flaky, crescent‑shaped pastry",
-            "answer": "croissant",
-            "chunks": [
-                "cro",
-                "is",
-                "sant"
-            ]
-        }
-    ]
+  "theme": "Bakery",
+  "puzzle": [
+    {"word": "Person who bakes and sells bread", "answer": "baker", "chunks": ["ba", "ker"], "pool": "daily"},
+    {"word": "Tangy bread made with a fermented starter", "answer": "sourdough", "chunks": ["sour", "dough"], "pool": "daily"},
+    {"word": "Baked food made from flour, butter and water dough", "answer": "pastry", "chunks": ["pas", "try"], "pool": "daily"},
+    {"word": "Buttery crescent-shaped French pastry", "answer": "croissant", "chunks": ["crois", "sant"], "pool": "daily"},
+    {"word": "Small round cake baked in a cup-shaped tin", "answer": "muffin", "chunks": ["muf", "fin"], "pool": "daily"},
+    {"word": "Mini cake topped with icing", "answer": "cupcake", "chunks": ["cup", "cake"], "pool": "daily"},
+    {"word": "Ring-shaped fried treat with a hole in the middle", "answer": "doughnut", "chunks": ["dough", "nut"], "pool": "daily"},
+    {"word": "Dense chocolate square", "answer": "brownie", "chunks": ["brown", "ie"], "pool": "daily"},
+    {"word": "Small sweet baked treat, often with chips", "answer": "cookie", "chunks": ["cook", "ie"], "pool": "daily"},
+    {"word": "Ring-shaped bread boiled before baking", "answer": "bagel", "chunks": ["ba", "gel"], "pool": "daily"},
+    {"word": "Long thin French loaf", "answer": "baguette", "chunks": ["ba", "guette"], "pool": "daily"},
+    {"word": "Knot-shaped baked snack sprinkled with salt", "answer": "pretzel", "chunks": ["pret", "zel"], "pool": "daily"},
+    {"word": "Flat round cake cooked in a pan", "answer": "pancake", "chunks": ["pan", "cake"], "pool": "daily"},
+    {"word": "Crisp grid-patterned batter cake", "answer": "waffle", "chunks": ["waf", "fle"], "pool": "daily"},
+    {"word": "Small crisp or soft baked treat", "answer": "biscuit", "chunks": ["bis", "cuit"], "pool": "daily"},
+    {"word": "Hot chamber used to bake", "answer": "oven", "chunks": ["ov", "en"], "pool": "daily"},
+    {"word": "Pressing and folding dough by hand", "answer": "kneading", "chunks": ["knead", "ing"], "pool": "daily"},
+    {"word": "Cylinder used to flatten dough", "answer": "rollingpin", "chunks": ["rolling", "pin"], "pool": "daily"},
+    {"word": "Sweet coating on a cake", "answer": "icing", "chunks": ["ic", "ing"], "pool": "daily"},
+    {"word": "Tiny coloured sugar bits on top of treats", "answer": "sprinkles", "chunks": ["sprin", "kles"], "pool": "daily"},
+    {"word": "Shop where bread and cakes are made and sold", "answer": "bakery", "chunks": ["bake", "ry"], "pool": "challenge"},
+    {"word": "Creamy dessert on a biscuit base", "answer": "cheesecake", "chunks": ["cheese", "cake"], "pool": "challenge"},
+    {"word": "Spice used in rolls and buns", "answer": "cinnamon", "chunks": ["cin", "na", "mon"], "pool": "challenge"},
+    {"word": "Sweet treat made from cocoa", "answer": "chocolate", "chunks": ["choc", "o", "late"], "pool": "challenge"},
+    {"word": "Flavour from orchid pods used in cakes", "answer": "vanilla", "chunks": ["va", "nil", "la"], "pool": "challenge"},
+    {"word": "Sweet creamy egg sauce", "answer": "custard", "chunks": ["cus", "tard"], "pool": "challenge"},
+    {"word": "Light sweet foam of whipped egg whites", "answer": "meringue", "chunks": ["me", "ringue"], "pool": "challenge"},
+    {"word": "Long cream-filled pastry with chocolate on top", "answer": "eclair", "chunks": ["e", "clair"], "pool": "challenge"},
+    {"word": "Sweet pastry with fruit or cream", "answer": "danish", "chunks": ["dan", "ish"], "pool": "challenge"},
+    {"word": "Flat Italian bread with olive oil and herbs", "answer": "focaccia", "chunks": ["fo", "cac", "cia"], "pool": "challenge"},
+    {"word": "Italian bread with a chewy holey crumb", "answer": "ciabatta", "chunks": ["cia", "bat", "ta"], "pool": "challenge"},
+    {"word": "Rich French bread made with butter and eggs", "answer": "brioche", "chunks": ["bri", "oche"], "pool": "challenge"},
+    {"word": "Spiced treat shaped like a little man", "answer": "gingerbread", "chunks": ["ginger", "bread"], "pool": "challenge"},
+    {"word": "Thin bread that is not left to rise", "answer": "flatbread", "chunks": ["flat", "bread"], "pool": "challenge"},
+    {"word": "Buttery Scottish biscuit", "answer": "shortbread", "chunks": ["short", "bread"], "pool": "challenge"},
+    {"word": "Dairy spread creamed into cake batter", "answer": "butter", "chunks": ["but", "ter"], "pool": "practice"},
+    {"word": "Sweet crystals added to bakes", "answer": "sugar", "chunks": ["su", "gar"], "pool": "practice"},
+    {"word": "Machine that beats batter", "answer": "mixer", "chunks": ["mix", "er"], "pool": "practice"},
+    {"word": "Gadget that tells you when baking is done", "answer": "timer", "chunks": ["ti", "mer"], "pool": "practice"},
+    {"word": "Garment that protects a baker's clothes", "answer": "apron", "chunks": ["a", "pron"], "pool": "practice"},
+    {"word": "Instructions for making a dish", "answer": "recipe", "chunks": ["re", "ci", "pe"], "pool": "practice"},
+    {"word": "Wet mixture of flour, eggs and milk", "answer": "batter", "chunks": ["bat", "ter"], "pool": "practice"},
+    {"word": "Dessert with a crunchy topping of butter and flour", "answer": "crumble", "chunks": ["crum", "ble"], "pool": "practice"},
+    {"word": "Appliance that browns slices of bread", "answer": "toaster", "chunks": ["toast", "er"], "pool": "practice"},
+    {"word": "Layered pastry rolled around apple filling", "answer": "strudel", "chunks": ["stru", "del"], "pool": "practice"}
+  ]
 }

@@ -5,7 +5,7 @@ import { usePracticeProgress } from '../hooks/usePracticeProgress';
 import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
 import { cx } from '../lib/cx';
 import { formatTime } from '../lib/format';
-import { fetchPuzzle } from '../lib/puzzle';
+import { fetchBank, WORDS_PER_PUZZLE } from '../lib/puzzle';
 // @ts-ignore CSS modules are handled by the app bundler.
 import styles from './Practice.module.css';
 
@@ -30,20 +30,23 @@ export default function Practice() {
 
   // Each file is read once, only for its theme and word count.
   useEffect(() => {
-    const ctrl = new AbortController();
+    let live = true;
     for (const file of archiveFiles) {
-      fetchPuzzle(file, ctrl.signal)
+      fetchBank(file)
         .then((p) =>
+          live &&
           setSummaries((s) => ({
             ...s,
-            [file]: { status: 'ready', theme: p.theme ?? fallbackTheme(file), words: p.items.length },
+            [file]: { status: 'ready', theme: p.theme ?? fallbackTheme(file), words: WORDS_PER_PUZZLE },
           })),
         )
         .catch(() => {
-          if (!ctrl.signal.aborted) setSummaries((s) => ({ ...s, [file]: { status: 'error' } }));
+          if (live) setSummaries((s) => ({ ...s, [file]: { status: 'error' } }));
         });
     }
-    return () => ctrl.abort();
+    return () => {
+      live = false;
+    };
   }, [archiveFiles]);
 
   const solvedCount = archiveFiles.filter((f) => progress[f] !== undefined).length;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import AccountDialog from '../components/AccountDialog';
@@ -6,9 +6,9 @@ import { BackIcon, ClockIcon, StreakIcon, TrophyIcon } from '../components/icons
 import game from '../game/Game.module.css';
 import { usePuzzle } from '../hooks/usePuzzle';
 import { usePuzzleSchedule } from '../hooks/usePuzzleSchedule';
-import { dayNumber } from '../lib/schedule';
 import { cx } from '../lib/cx';
 import { formatTime } from '../lib/format';
+import { buzz } from '../lib/haptics';
 import { getLeaderboard } from '../lib/leaderboard';
 import type { Board, BoardEntry, BoardScope, BoardTab } from '../lib/leaderboard';
 import { timeUntilReset } from '../lib/storage';
@@ -74,12 +74,18 @@ export default function Leaderboard() {
   const [scope, setScope] = useState<BoardScope>('global');
   const [state, setState] = useState<State>({ status: 'loading' });
   const [accountOpen, setAccountOpen] = useState(false);
+  // which way the last tab change went, so the new board slides in from that side
+  const [dir, setDir] = useState<'next' | 'prev'>('next');
+  const swipe = useRef<{ x: number; y: number; t: number } | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const userId = user?.id;
   const signedIn = userId !== undefined;
 
   const sched = usePuzzleSchedule();
-  const daily = usePuzzle(sched.status === 'ready' ? sched.schedule.daily : null, 'puzzles', `day${dayNumber()}`);
+  const daily = usePuzzle(
+    sched.status === 'ready' ? sched.schedule.daily : null,
+    sched.status === 'ready' ? { mode: 'daily', appearance: sched.schedule.dailyAppearance } : null,
+  );
   const theme = daily.status === 'ready' ? daily.puzzle.theme : null;
 
   // signed-out visitors can look at the global boards, nothing more
@@ -120,6 +126,33 @@ export default function Leaderboard() {
 
   const guest = !signedIn && !authLoading;
 
+  function goTo(next: BoardTab) {
+    if (next === tab) return;
+    setDir(TABS.findIndex((t) => t.id === next) > TABS.findIndex((t) => t.id === tab) ? 'next' : 'prev');
+    setTab(next);
+  }
+
+  // slide left/right anywhere on the screen to move between Today, Streak and All time
+  function onTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0];
+    swipe.current = { x: t.clientX, y: t.clientY, t: Date.now() };
+  }
+  function onTouchEnd(e: React.TouchEvent) {
+    const s = swipe.current;
+    swipe.current = null;
+    if (!s || !enabled) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - s.x;
+    const dy = t.clientY - s.y;
+    if (Math.abs(dx) < 56 || Math.abs(dx) < Math.abs(dy) * 1.6 || Date.now() - s.t > 800) return;
+    const i = TABS.findIndex((x) => x.id === tab);
+    const next = TABS[i + (dx < 0 ? 1 : -1)];
+    if (next) {
+      buzz(8);
+      goTo(next.id);
+    }
+  }
+
   function row(e: BoardEntry, key: string | number) {
     return (
       <li key={key} className={cx(styles.row, e.isMe && styles.rowMe)}>
@@ -134,7 +167,7 @@ export default function Leaderboard() {
   }
 
   return (
-    <div className={cx(game.stage, game.roomy, 'enter')}>
+    <div className={cx(game.stage, game.roomy, 'enter')} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <header className={game.header}>
         <Link to="/" className={game.backBtn} aria-label="Back to menu">
           <BackIcon />
@@ -164,7 +197,7 @@ export default function Leaderboard() {
                 role="tab"
                 aria-selected={tab === t.id}
                 className={cx(styles.tab, tab === t.id && styles.tabOn)}
-                onClick={() => setTab(t.id)}
+                onClick={() => goTo(t.id)}
               >
                 {t.label}
               </button>
@@ -247,7 +280,7 @@ export default function Leaderboard() {
             </div>
           ) : (
             <>
-              <div className={cx(styles.podium, 'stagger')}>
+              <div className={cx(styles.podium, guest && styles.podiumGuest, 'stagger', dir === 'next' ? styles.slideNext : styles.slidePrev)}>
                 {PODIUM_ORDER.filter((i) => i < podium.length).map((i) => {
                   const e = podium[i];
                   return (
@@ -273,7 +306,7 @@ export default function Leaderboard() {
               </div>
 
               {rest.length > 0 && (
-                <div className={cx(styles.listWrap, guest && styles.listGuest)}>
+                <div className={cx(styles.listWrap, guest && styles.listGuest, dir === 'next' ? styles.slideNext : styles.slidePrev)}>
                   <ol className={cx(styles.list, 'stagger')}>{(guest ? rest.slice(0, 3) : rest).map((e, i) => row(e, `${e.rank}-${i}`))}</ol>
                   {guest && <div className={styles.fade} aria-hidden="true" />}
                 </div>
