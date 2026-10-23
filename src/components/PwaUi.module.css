@@ -332,10 +332,10 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -8px;
+  bottom: 0;
   z-index: 1400;
   max-width: 460px;
-  margin:auto ;
+  margin: auto;
   box-sizing: border-box;
   background: var(--cream);
   color: var(--brown);
@@ -346,8 +346,8 @@
 }
 
 .sheetIos {
-  top: 0;
-  bottom: -8px;
+  top: 90%;
+  bottom: -20px;
   border-radius: 0 0 22px 22px;
   padding-top: calc(10px + env(safe-area-inset-top, 0px));
   padding-bottom: 16px;
