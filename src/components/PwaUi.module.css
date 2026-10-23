@@ -346,7 +346,33 @@
 }
 
 .sheetIos {
-  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  top: 0;
+  bottom: auto;
+  border-radius: 0 0 22px 22px;
+  padding-top: calc(16px + env(safe-area-inset-top, 0px));
+  padding-bottom: 22px;
+  animation: sheetIosIn 0.45s cubic-bezier(0.25, 1.25, 0.4, 1) both;
+}
+
+/* hide the pull-handle at the top of a top-anchored sheet */
+.sheetIos .grab {
+  display: none;
+}
+
+.sheetIos.sheetOut {
+  animation: sheetIosOut 0.24s ease-in forwards;
+}
+
+@keyframes sheetIosIn {
+  from {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes sheetIosOut {
+  to {
+    transform: translateY(-100%);
+  }
 }
 
 .sheetOut {
@@ -558,11 +584,11 @@
 .pointer {
   position: fixed;
   left: 50%;
-  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
   z-index: 1320;
   transform: translateX(-50%);
   color: var(--yellow);
-  font-size: 30px;
+  font-size: 26px;
   line-height: 1;
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
   animation: point 1s ease-in-out infinite;
@@ -572,10 +598,10 @@
 @keyframes point {
   0%,
   100% {
-    transform: translate(-50%, -6px);
+    transform: translate(-50%, 0px);
   }
   50% {
-    transform: translate(-50%, 6px);
+    transform: translate(-50%, 8px);
   }
 }
 
