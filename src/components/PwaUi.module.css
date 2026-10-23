@@ -335,7 +335,7 @@
   bottom: 0;
   z-index: 1310;
   max-width: 460px;
-  margin: 0 auto;
+  margin: auto 40px auto;
   box-sizing: border-box;
   background: var(--cream);
   color: var(--brown);
