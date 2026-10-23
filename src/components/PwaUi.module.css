@@ -349,8 +349,8 @@
   top: 0;
   bottom: auto;
   border-radius: 0 0 22px 22px;
-  padding-top: calc(16px + env(safe-area-inset-top, 0px));
-  padding-bottom: 22px;
+  padding-top: calc(10px + env(safe-area-inset-top, 0px));
+  padding-bottom: 16px;
   animation: sheetIosIn 0.45s cubic-bezier(0.25, 1.25, 0.4, 1) both;
 }
 
@@ -493,11 +493,11 @@
 
 .steps {
   list-style: none;
-  margin: 18px 0 16px;
+  margin: 14px 0 14px;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .steps li {
@@ -584,7 +584,7 @@
 .pointer {
   position: fixed;
   left: 50%;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
   z-index: 1320;
   transform: translateX(-50%);
   color: var(--yellow);
@@ -598,10 +598,10 @@
 @keyframes point {
   0%,
   100% {
-    transform: translate(-50%, 0px);
+    transform: translate(-50%, -6px);
   }
   50% {
-    transform: translate(-50%, 8px);
+    transform: translate(-50%, 0px);
   }
 }
 

@@ -267,7 +267,7 @@ export function InstallSheet() {
           />
           <div className={styles.headText}>
             <h2 id="install-title" className={styles.title}>
-              {mode === 'ios' ? 'Add to your Home Screen' : 'Install WordChunk'}
+              {mode === 'ios' ? 'Add to Home Screen' : 'Install WordChunk'}
             </h2>
             {mode === 'native' && <p className={styles.host}>{host}</p>}
           </div>
@@ -323,7 +323,7 @@ export function InstallSheet() {
                   <span className={styles.inlineIcon}>
                     <ShareIcon />
                   </span>{' '}
-                  in the Safari toolbar
+                  or <strong>&#8943;</strong> below
                 </span>
               </li>
               <li style={{ ['--i' as string]: 1 }}>
@@ -339,7 +339,7 @@ export function InstallSheet() {
                   3
                 </span>
                 <span className={styles.stepText}>
-                  Tap <strong>Add</strong>. WordChunk is now on your home screen
+                  Tap <strong>Add</strong> to finish
                 </span>
               </li>
             </ol>
