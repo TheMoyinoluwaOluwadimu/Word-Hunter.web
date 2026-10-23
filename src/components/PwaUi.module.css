@@ -346,9 +346,9 @@
 }
 
 .sheetIos {
-  top: 75%;
-  bottom: 24px;
-  border-radius: 0 0 22px 22px;
+  top: 60%;
+  bottom: 40px;
+  border-radius: 22px 22px 0 0;
   padding-top: calc(10px + env(safe-area-inset-top, 0px));
   padding-bottom: 16px;
   animation: sheetIosIn 0.45s cubic-bezier(0.25, 1.25, 0.4, 1) both;
