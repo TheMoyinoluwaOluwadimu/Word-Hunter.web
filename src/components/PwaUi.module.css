@@ -346,8 +346,8 @@
 }
 
 .sheetIos {
-  top: 90%;
-  bottom: -20px;
+  top: 75%;
+  bottom: 24px;
   border-radius: 0 0 22px 22px;
   padding-top: calc(10px + env(safe-area-inset-top, 0px));
   padding-bottom: 16px;
